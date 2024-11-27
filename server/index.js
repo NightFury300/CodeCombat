@@ -32,7 +32,9 @@ const contestRoutes = require('./routes/contestRoutes');
 const teamRoutes = require('./routes/teamRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-
+app.get('/',(req,res)=>{
+  res.send("Welcome to codecombat api")
+})
 app.use('/api/contest', contestRoutes);
 app.use('/api/contest', teamRoutes); // Avoid route conflict
 app.use('/auth', authRoutes);
