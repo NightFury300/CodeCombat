@@ -3,6 +3,7 @@ import Ellipse from "../../assets/Ellipse 20@1x.png"
 import RectangleTop from "../../assets/Rectangle 3@1x.png"
 import RectangleBottom from "../../assets/Rectangle 1@3x.png"
 import ContestCreation from './ContestCreation'
+import HelpPopup from '../Help/HelpPopup'
 const Battle = () => {
   return (
     <div className='w-screen h-screen relative flex items-center justify-center overflow-hidden '>

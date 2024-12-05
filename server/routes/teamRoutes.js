@@ -35,4 +35,6 @@ router.put('/:contestId/team/:teamId/join', teamController.joinTeam);
 // Update a team's score (e.g., after a contest round)
 router.put('/team/:teamId/score', teamController.updateTeamScore);
 
+router.get('/:teamId/members', teamController.getTeamMembersById);
+
 module.exports = router;

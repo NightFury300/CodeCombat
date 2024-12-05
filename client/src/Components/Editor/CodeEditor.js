@@ -4,6 +4,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from '../../Contexts/UserContext';
+import HelpPopup from "../Help/HelpPopup";
 const CodeEditor = () => {
   const navigate = useNavigate();
   const { contestId, teamId } = useParams(); // Extract the teamId from the URL
@@ -14,11 +15,12 @@ const CodeEditor = () => {
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [testResults, setTestResults] = useState([]);
-  const [customInput, setCustomInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [teamScore, setTeamScore] = useState(0); // Team's score state
   const socket = useRef(null); // Use useRef for the socket connection
+  const [taskScores, setTaskScores] = useState({});
+  
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
@@ -29,33 +31,33 @@ const CodeEditor = () => {
   useEffect(() => {
     const savedCode = localStorage.getItem("savedCode");
     const savedScore = localStorage.getItem("teamScore");
+    const fetchTeamScore = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/contest/team/${teamId}`
+        );
 
+        console.log(response.data.score)
+        setTeamScore(response.data.score);
+              } catch (error) {
+        console.error("Error fetching team score:", error);
+      }
+    };
     if (savedCode) setCode(savedCode);
     if (savedScore) setTeamScore(Number(savedScore));
 
-    const dummyTasks = [
-      {
-        title: "Reverse a String",
-        statement: "Write a function to reverse a given string.",
-        explanation: "You need to take a string as input and return its reverse.",
-        testcases: [
-          { input: "hello", output: "olleh" },
-          { input: '"world"', output: '"dlrow"' },
-          { input: "coding", output: "gnidoc" },
-        ],
-      },
-      {
-        title: "Sum of Two Numbers",
-        statement: "Write a function to return the sum of two numbers.",
-        explanation: "You need to take two integers as input and return their sum.",
-        testcases: [
-          { input: "2 3", output: "5" },
-          { input: "-1 4", output: "3" },
-          { input: "10 15", output: "25" },
-        ],
-      },
-    ];
-    setTasks(dummyTasks);
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/codestatment/problems"
+        );
+        setTasks(response.data); // Set tasks from API response
+        console.log(response.data);
+        
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
     socket.current = io("http://localhost:5000");
 
   // Emit event to join the team room
@@ -65,7 +67,8 @@ const CodeEditor = () => {
     socket.current.on("message", (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   });
-
+  fetchTeamScore()
+  fetchTasks()
   // Cleanup on component unmount
   return () => {
     socket.current.disconnect(); // Disconnect the socket when component is unmounted
@@ -83,84 +86,92 @@ const CodeEditor = () => {
     return languages[language] || 63; // Default to JavaScript
   };
 
-  const runCode = () => {
-    try {
-      const userFunction = new Function("input", code);
-      const result = userFunction(customInput || tasks[currentPage]?.testcases[0]?.input);
-      setOutput(`Output: ${result}`);
-    } catch (err) {
-      setOutput(`Error: ${err.message}`);
-    }
-  };
+ 
 
-  const submitCode = async () => {
-    setLoading(true);
-    setTestResults([]); // Clear previous results
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    try {
-      const selectedTask = tasks[currentPage];
-      const testcases = selectedTask.testcases;
+// const submitCode = async () => {
+//   setLoading(true);
+//   setTestResults([]);
 
-      const results = await Promise.all(
-        testcases.map(async (testcase) => {
-          const response = await axios.post(
-            "https://judge0-ce.p.rapidapi.com/submissions",
-            {
-              source_code: code,
-              language_id: getLanguageId(language),
-              stdin: testcase.input.trim(),
-              expected_output: testcase.output.trim(),
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-RapidAPI-Key": "a6098a2ae7msh19a639cb152ab1cp1b8b4fjsnd5d51f5d6524",
-                "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
-              },
-            }
-          );
+//   try {
+//     const selectedTask = tasks[currentPage];
+//     const testcases = selectedTask.testcases;
+//     console.log(testcases)
+//     const results = [];
 
-          const token = response.data.token;
+//     for (const [index, testcase] of testcases.entries()) {
+//       try {
+//         const response = await axios.post(
+//           "https://judge0-ce.p.rapidapi.com/submissions",
+//           {
+//             source_code: code,
+//             language_id: getLanguageId(language),
+//             stdin: testcase.input.trim(),
+//             expected_output: testcase.output.trim(),
+//           },
+//           {
+//             headers: {
+//               "Content-Type": "application/json",
+//               "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+//               "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+//             },
+//           }
+//         );
 
-          const resultResponse = await axios.get(
-            `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
-            {
-              headers: {
-                "X-RapidAPI-Key": "a6098a2ae7msh19a639cb152ab1cp1b8b4fjsnd5d51f5d6524",
-                "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
-              },
-            }
-          );
+//         const token = response.data.token;
 
-          const result = resultResponse.data;
-          const status = result.status.id === 3 ? "Passed" : "Failed";
-          const actualOutput = result.stdout?.trim() || "Error/No Output";
+//         // Wait before fetching the result
+//         await sleep(200); // Add delay (200 ms)
 
-          return {
-            input: testcase.input,
-            expected: testcase.output,
-            actual: actualOutput,
-            status,
-          };
-        })
-      );
+//         const resultResponse = await axios.get(
+//           `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
+//           {
+//             headers: {
+//               "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+//               "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+//             },
+//           }
+//         );
 
-      setTestResults(results);
+//         const result = resultResponse.data;
+//         const status = result.status.id === 3 ? "Passed" : "Failed";
+//         const actualOutput = result.stdout?.trim() || "Error/No Output";
 
-      const passed = results.filter((result) => result.status === "Passed").length;
-      const scoreForThisTask = (passed / testcases.length) * 50;
+//         results.push({
+//           input: testcase.input,
+//           expected: testcase.output,
+//           actual: actualOutput,
+//           status,
+//         });
+//       } catch (innerError) {
+//         console.error("Error evaluating testcase:", innerError.message);
+//       }
+//     }
 
-      setTeamScore((prevScore) => prevScore + scoreForThisTask);
+//     setTestResults(results);
 
-      localStorage.setItem("teamScore", teamScore + scoreForThisTask);
+//     const passed = results.filter((result) => result.status === "Passed").length;
+//     const scoreForThisTask = (passed / testcases.length) * 50;
 
-      setOutput(`${passed}/${testcases.length} test cases passed. You earned ${scoreForThisTask} points.`);
-    } catch (error) {
-      setOutput(`Error during evaluation: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+//     // Update scores
+//     setTaskScores((prevScores) => {
+//       const updatedScores = { ...prevScores, [currentPage]: scoreForThisTask };
+//       localStorage.setItem("taskScores", JSON.stringify(updatedScores));
+//       return updatedScores;
+//     });
+
+//     setTeamScore(scoreForThisTask);
+
+//     setOutput(`${passed}/${testcases.length} test cases passed. You earned ${scoreForThisTask} points.`);
+//   } catch (error) {
+//     setOutput(`Error evaluating testcase: ${error.message}`);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+  
 
   // const sendMessage = () => {
   //   if (currentMessage.trim()) {
@@ -170,6 +181,142 @@ const CodeEditor = () => {
   //     setCurrentMessage("");
   //   }
   // };
+  const fetchSubmissionResult = async (token) => {
+  let status;
+  let result;
+
+  while (true) {
+    const resultResponse = await axios.get(
+      `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
+      {
+        headers: {
+          "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+        },
+      }
+    );
+
+    result = resultResponse.data;
+    status = result.status.id;
+
+    if (status === 3 || status > 3) break; // Status 3 = success, >3 = failure/error
+    await sleep(500); // Wait 500ms before the next poll
+  }
+
+  return result;
+};
+
+  const submitCode = async () => {
+    setLoading(true);
+    setTestResults([]);
+  
+    try {
+      const selectedTask = tasks[currentPage];
+      const testcases = selectedTask.testcases;
+  
+      // Prepare batch submission
+      const submissions = testcases.map((testcase) => ({
+        source_code: code,
+        language_id: getLanguageId(language),
+        stdin: testcase.input.trim(),
+        expected_output: testcase.output.trim(),
+      }));
+  
+      const response = await axios.post(
+        "https://judge0-ce.p.rapidapi.com/submissions/batch",
+        { submissions },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+            "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+          },
+        }
+      );
+  
+      const tokens = response.data.map((submission) => submission.token);
+  
+      // Fetch results for all tokens
+      const results = await Promise.all(tokens.map(fetchSubmissionResult));
+  
+      const formattedResults = results.map((result, index) => ({
+        input: testcases[index].input,
+        expected: testcases[index].output,
+        actual: result.stdout?.trim() || "Error/No Output",
+        status: result.status.id === 3 ? "Passed" : "Failed",
+      }));
+  
+      setTestResults(formattedResults);
+      const passed = formattedResults.filter((r) => r.status === "Passed").length;
+      setOutput(`${passed}/${testcases.length} test cases passed.`);
+    } catch (error) {
+      setOutput(`Error evaluating testcase: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
+//   const submitCode = async () => {
+//   setLoading(true);
+//   setTestResults([]);
+//   try {
+//     const selectedTask = tasks[currentPage];  
+//     const testcases = selectedTask.testcases;
+
+//     // Prepare batch submission
+//     const submissions = testcases.map((testcase) => ({
+//       source_code: code,
+//       language_id: getLanguageId(language),
+//       stdin: testcase.input.trim(),
+//       expected_output: testcase.output.trim(),
+//     }));
+
+//     const response = await axios.post(
+//       "https://judge0-ce.p.rapidapi.com/submissions/batch",
+//       { submissions },
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//           "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+//           "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+//         },
+//       }
+//     );
+
+//     const tokens = response.data.map((result) => result.token);
+
+//     // Fetch results with delay
+//     const results = [];
+//     for (const token of tokens) {
+//       await sleep(1000); // Wait 1 second
+//       const resultResponse = await axios.get(
+//         `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
+//         {
+//           headers: {
+//             "X-RapidAPI-Key": "97a2cfe742msh47f27778f669887p104fa4jsn1e20de95c67b",
+//             "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+//           },
+//         }
+//       );
+//       const result = resultResponse.data;
+//       results.push({
+//         input: testcases.find(tc => tc.token === token)?.input,
+//         expected: testcases.find(tc => tc.token === token)?.expected_output,
+//         actual: result.stdout?.trim() || "Error/No Output",
+//         status: result.status.id === 3 ? "Passed" : "Failed",
+//       });
+//     }
+
+//     setTestResults(results);
+//     setOutput(`${results.filter(r => r.status === "Passed").length}/${testcases.length} test cases passed.`);
+//   } catch (error) {
+//     setOutput(`Error evaluating testcase: ${error.message}`);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
   const sendMessage = () => {
       const message = { teamId, content: currentMessage, sender: user.username };
       socket.current.emit("message", message); // Emit to the server
@@ -190,8 +337,7 @@ const CodeEditor = () => {
 
   const finish = async () => {
     try {
-      const score = calculateScore(); 
-      console.log(score);
+      const score = teamScore; 
       const response = await axios.put(`http://localhost:5000/api/contest/team/${teamId}/score`, { score });
 
       if (response.status === 200) {
@@ -205,19 +351,18 @@ const CodeEditor = () => {
     }
   };
 
-  const calculateScore = () => {
-    return 10;
-  };
+ 
 
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center px-4  bg-gray-100 border-b">
         <h1 className="text-xl font-semibold">Code Battle 2024</h1>  
+        <HelpPopup/>
 
         {/* Pagination */}
         <div className="p-4  flex justify-center gap-10 items-center">
-          <div className="text-lg">Score: {teamScore}</div>
+          <div className="text-lg">Score: {Math.floor(teamScore)}</div>
           <button
             onClick={() => handlePagination("prev")}
             className="px-4 py-2 mx-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
@@ -263,18 +408,20 @@ const CodeEditor = () => {
         <h2 className="text-xl font-semibold">{tasks[currentPage]?.title}</h2>
         <p>{tasks[currentPage]?.statement}</p>
         <p>{tasks[currentPage]?.explanation}</p>
-        
+        <p>{tasks[currentPage]?.description}</p>
+        {/* <p>{tasks[currentPage]?.testcases}</p> */}
+
         </div>
         
 
         <div className="p-4 flex gap-2 justify-between">
-          <button
+          {/* <button
             onClick={runCode}
             disabled={loading}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
             Run Code
-          </button>
+          </button> */}
           <button
             onClick={submitCode}
             disabled={loading}
@@ -295,45 +442,73 @@ const CodeEditor = () => {
       </div>
 
       {/* Output */}
-      <div className="bg-gray-100 px-4  py-2 flex justify-between">
-        <div><h2 className="text-xl font-semibold">Test Output</h2>
-        <pre>{output}</pre>
-        </div>
-        {/* Chat */}
+      <div className="bg-gray-100 px-4 py-2 flex justify-between">
+        <div className="flex flex-col gap-4 w-full">
+    <h2 className="text-xl font-semibold">Test Output</h2>
+
+    {/* Table for test case results */}
+    <table className="table-auto w-full border-collapse border border-gray-300">
+      <thead>
+        <tr className="bg-gray-200">
+          <th className="border border-gray-300 px-4 py-2 text-left">Input</th>
+          <th className="border border-gray-300 px-4 py-2 text-left">Expected Output</th>
+          <th className="border border-gray-300 px-4 py-2 text-left">Actual Output</th>
+          <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {testResults.length > 0 ? (
+          testResults.map((result, index) => (
+            <tr key={index} className={result.status === "Passed" ? "bg-green-100" : "bg-red-100"}>
+              <td className="border border-gray-300 px-4 py-2">{result.input}</td>
+              <td className="border border-gray-300 px-4 py-2">{result.expected}</td>
+              <td className="border border-gray-300 px-4 py-2">{result.actual}</td>
+              <td className="border border-gray-300 px-4 py-2 font-semibold">{result.status}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="4" className="border border-gray-300 px-4 py-2 text-center">
+              No results available
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+
+    {/* Raw Output */}
+    <pre className="mt-4 p-4 bg-gray-200 rounded-md overflow-auto">
+      {output || "No output available"}
+    </pre>
+         </div>
+      {/* Chat Section */}
         <div className="flex flex-col gap-1 p-2 w-2/5 bg-violet-100 rounded-xl border-l-2 border-violet-100">
-        <h2 className="text-xl font-semibold">Team Bashes</h2>
-  <div className="flex flex-col bg-gray-200 p-4 h-52 overflow-auto">
-    {/* Filter out messages sent by "You" */}
-    {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <strong>{msg.sender}:</strong> <p>{msg.content}</p>
-          </div>
-        ))}
-
-  </div>
-
-  <div className="flex gap-2">
-    <input
-      type="text"
-      value={currentMessage}
-      onChange={(e) => setCurrentMessage(e.target.value)}
-      className="px-4 py-2 w-full border rounded-md"
-    />
-    <button
-      onClick={sendMessage}
-      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-         Send
-        </button>
+    <h2 className="text-xl font-semibold">Team Bashes</h2>
+    <div className="flex flex-col bg-gray-200 p-4 h-52 overflow-auto">
+      {messages.map((msg, index) => (
+        <div key={index} className="message">
+          <strong>{msg.sender}:</strong> <p>{msg.content}</p>
+        </div>
+      ))}
+    </div>
+    <div className="flex gap-2">
+      <input
+        type="text"
+        value={currentMessage}
+        onChange={(e) => setCurrentMessage(e.target.value)}
+        className="px-4 py-2 w-full border rounded-md"
+      />
+      <button
+        onClick={sendMessage}
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      >
+        Send
+      </button>
+    </div>
         </div>
       </div>
 
 
-      </div>
-
-      
-
-      
     </div>
   );
 };

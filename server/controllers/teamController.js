@@ -136,10 +136,9 @@ const Contest = require('../models/Contest'); // Import the Contest model
 
 // Create a new team for a contest
 exports.createTeam = async (req, res) => {
-  const { contestId } = req.params;  // Get contestId from URL params
-  const { teamName, teamSize } = req.body;   // Get team name and size from request body
-  console.log(req.body);
-  
+  const { contestId } = req.params; // Get contestId from URL params
+  const { teamName, teamSize, passkey } = req.body; // Get team name, size, and passkey from the request body
+  // const { userId } = req.user; 
   try {
     // Ensure that the contest exists
     const contest = await Contest.findById(contestId);
@@ -152,21 +151,68 @@ exports.createTeam = async (req, res) => {
       teamName,
       teamSize,
       contestId,
-      members: [], // You can initially leave the members empty or add the first member if necessary
+      passkey,
+      members: [], // Add the creator as the initial member
     });
 
     // Save the team to the database
     await newTeam.save();
 
-    // Add the new team to the contest (optional, depending on your contest model)
+    // Optionally, add the new team to the contest's teams array (if contest has such a field)
     contest.teams.push(newTeam._id); // Assuming `teams` is an array in the Contest model
     await contest.save();
 
     // Respond with the newly created team
-    res.status(201).json(newTeam);
+    res.status(201).json({
+      message: 'Team created successfully',
+      team: newTeam,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating team' });
+    console.error('Error creating team:', error);
+    res.status(500).json({ message: 'Error creating team', error: error.message });
+  }
+};
+
+exports.joinTeam = async (req, res) => {
+  const { contestId, teamId } = req.params; // Get contestId and teamId from URL params
+  const { userId, passkey } = req.body; // Get userId and passkey from the request body
+
+  try {
+    // Find the team in the given contest
+    const team = await Team.findOne({ _id: teamId, contestId });
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found' });
+    }
+
+    // Check if the passkey matches
+    if (team.passkey !== passkey) {
+      return res.status(403).json({ message: 'Invalid passkey' });
+    }
+
+    // Check if the team is full
+    if (team.members.length >= team.teamSize) {
+      return res.status(400).json({ message: 'Team is already full' });
+    }
+
+    // Check if the user is already in the team
+    if (team.members.includes(userId)) {
+      return res.status(400).json({ message: 'User is already a member of the team' });
+    }
+
+    // Add the user to the team's members array
+    team.members.push(userId);
+    await team.save();
+
+    // Populate members to return detailed user information if needed
+    const populatedTeam = await team.populate('members');
+
+    res.status(200).json({
+      message: 'User joined the team successfully',
+      team: populatedTeam,
+    });
+  } catch (error) {
+    console.error('Error joining team:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -230,41 +276,66 @@ exports.updateTeamScore = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-exports.joinTeam = async (req, res) => {
-  const { contestId, teamId } = req.params;
-  const { userId } = req.body;
+
+
+// Get all members of a specific team by teamId
+exports.getTeamMembersById = async (req, res) => {
+  const { teamId } = req.params; // Extract teamId from URL params
 
   try {
-    // Find the team in the given contest
-    const team = await Team.findOne({ _id: teamId, contestId });
+    // Find the team by its ID and populate the members field
+    const team = await Team.findById(teamId).populate('members', 'username '); // Populate members with name 
+
     if (!team) {
       return res.status(404).json({ message: 'Team not found' });
     }
 
-    // Check if the team is full
-    if (team.members.length >= team.teamSize) {
-      return res.status(400).json({ message: 'Team is already full' });
-    }
-
-    // Check if the user is already in the team
-    if (team.members.includes(userId)) {
-      return res.status(400).json({ message: 'User is already a member of the team' });
-    }
-
-    // Add the user to the team's members array
-    team.members.push(userId);
-    await team.save();
-
-    // Populate members to return detailed user information if needed
-    const populatedTeam = await team.populate('members');
-
+    // Return the members of the team
     res.status(200).json({
-      message: 'User joined the team successfully',
-      team: populatedTeam,
+      message: 'Team members fetched successfully',
+      members: team.members,
     });
   } catch (error) {
-    console.error('Error joining team:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error fetching team members:', error);
+    res.status(500).json({ message: 'Error fetching team members', error: error.message });
   }
 };
+
+// exports.joinTeam = async (req, res) => {
+//   const { contestId, teamId } = req.params;
+//   const { userId } = req.body;
+
+//   try {
+//     // Find the team in the given contest
+//     const team = await Team.findOne({ _id: teamId, contestId });
+//     if (!team) {
+//       return res.status(404).json({ message: 'Team not found' });
+//     }
+
+//     // Check if the team is full
+//     if (team.members.length >= team.teamSize) {
+//       return res.status(400).json({ message: 'Team is already full' });
+//     }
+
+//     // Check if the user is already in the team
+//     if (team.members.includes(userId)) {
+//       return res.status(400).json({ message: 'User is already a member of the team' });
+//     }
+
+//     // Add the user to the team's members array
+//     team.members.push(userId);
+//     await team.save();
+
+//     // Populate members to return detailed user information if needed
+//     const populatedTeam = await team.populate('members');
+
+//     res.status(200).json({
+//       message: 'User joined the team successfully',
+//       team: populatedTeam,
+//     });
+//   } catch (error) {
+//     console.error('Error joining team:', error);
+//     res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// };
 

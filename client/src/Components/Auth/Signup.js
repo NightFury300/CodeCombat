@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import Auth from "../../assets/Auth.png";
 import { FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import axios to make HTTP requests
+import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
+import { useUser } from '../../Contexts/UserContext';
 
 const Signup = () => {
+  const { login } = useUser();
   const [userData, setUserData] = useState({
     username: "",
     email: "",
@@ -13,6 +15,7 @@ const Signup = () => {
   });
   const [errors, setErrors] = useState({});
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Validation function
@@ -45,49 +48,46 @@ const Signup = () => {
 
   // Submit form to backend
   const submitForm = async (e) => {
-    e.preventDefault();
+    e.preventDefault();     
     if (validate()) {
+      setLoading(true); // Start loading state
       try {
-        // Send POST request to backend API
         const response = await axios.post('http://localhost:5000/auth/signup', userData);
-        
-        // If the signup is successful, redirect to login page
         if (response.status === 201) {
-          navigate('/login');  // Redirect to login page
+          login(response.data); // Set user context
+          navigate('/login'); // Redirect to login page
         }
       } catch (error) {
-        if (error.response) {
-          // Backend error (e.g., username or email already taken)
-          setErrors({ backend: error.response.data.message });
-        } else {
-          // Other errors (e.g., network errors)
-          setErrors({ backend: 'Something went wrong, please try again' });
-        }
+        const errorMessage = error.response?.data?.message || 'Something went wrong, please try again';
+        setErrors({ backend: errorMessage });
+        console.error('Signup error:', errorMessage);
+      } finally {
+        setLoading(false); // End loading state
       }
     }
   };
-  
+
   const handleGoogleLogin = async (response) => {
     if (response.error) {
-      console.error('Google Login Error: ', response.error);
+      alert('Google login failed, please try again.');
       return;
     }
-  
+
     const idToken = response.credential; // Google ID token
     try {
       const res = await axios.post('http://localhost:5000/auth/google', { idToken });
-      console.log('Login success:', res.data);
-      navigate('/profile');
+      login(res.data); // Set user context
+      navigate('/profile'); // Redirect to profile page
     } catch (error) {
-      console.error('Error during Google login:', error);
-      alert('Login failed, please try again');
+      console.error('Google login failed:', error);
+      alert('Login failed, please try again.');
     }
   };
-  
+
   return (
     <section className='flex gap-20 h-screen w-screen items-center justify-center'>
       <div className='bg-gray-100 h-[80vh] w-1/3'>
-        <img src={Auth} alt='Login' className='h-[full] w-full object-cover' />
+        <img src={Auth} alt='Auth' className='h-[full] w-full object-cover' />
       </div>
       <div className='h-[750px] w-[900px] bg-[#8543f628] flex items-center justify-center flex-col gap-2 p-2 rounded-md'>
         <p className='text-3xl font-semibold'>Signup</p>
@@ -122,7 +122,7 @@ const Signup = () => {
               onChange={handleChange}
             />
             {errors.password && <p className="text-red-500">{errors.password}</p>}
-            {errors.backend && <p className="text-red-500">{errors.backend}</p>} {/* Display backend errors */}
+            {errors.backend && <p className="text-red-500">{errors.backend}</p>}
           </div>
           <span className='flex gap-2 items-center'>
             <input
@@ -137,26 +137,25 @@ const Signup = () => {
             <button
               type='submit'
               className='h-16 w-full flex items-center justify-center text-white bg-[#8543f6] font-semibold text-lg rounded-md'
-              disabled={!agreeTerms}
+              disabled={!agreeTerms || loading}
             >
-              Signup
+              {loading ? 'Signing Up...' : 'Signup'}
             </button>
             <div className='w-full flex justify-between px-5 text-gray-400'>
-              <Link to="/signup">Register</Link> {/* Link to Login */}
+              <Link to="/login">Login</Link>
               <p>Forgot Password</p>
             </div>
           </div>
         </form>
-        <p className='items-center'>or</p>
+        <p>or</p>
         <div className='flex items-center justify-center w-[80%]'>
-          {/* Google Login Button */}
           <GoogleLogin
-            onSuccess={handleGoogleLogin}  // Handle success response
-            onError={(error) => console.error('Google Login Error:', error)}  // Handle error
-            useOneTap={true} // Optional, to trigger sign-in automatically in some cases
+            onSuccess={handleGoogleLogin}
+            onError={(error) => console.error('Google Login Error:', error)}
+            useOneTap={true}
             theme="outline"
             shape="pill"
-            width="100%"  // Make button width fit
+            width="100%"
           />
         </div>
       </div>

@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { updateUserProfile,getUserProfile, } = require('../controllers/userController'); // Ensure the correct path
+const { updateUserProfile,getUserProfile,getLeaderboard, updateContestStats, getAllUsers } = require('../controllers/userController'); // Ensure the correct path
 const { isAuthenticated } = require('../middleware/auth'); // Assuming the middleware is correctly implemented
 
 
 // Route to get user profile (including statistics)
-router.get('/profile', isAuthenticated, getUserProfile);
-
+router.get('/:userId', getUserProfile);
+// router.get('/', getAllUsers);
 router.put('/update', isAuthenticated, updateUserProfile);
+router.get('/',getLeaderboard)
+router.put('/:userId', updateContestStats);
+
 
 module.exports = router;

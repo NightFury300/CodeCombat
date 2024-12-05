@@ -3,15 +3,17 @@ import Ellipse from "../../assets/Ellipse 20@1x.png"
 import RectangleTop from "../../assets/Rectangle 3@1x.png"
 import RectangleBottom from "../../assets/Rectangle 1@3x.png"
 import ProfileCard from "./ProfileCard"
-import Leaderboard from '../Leaderboard/Leaderboard'
-import StatusGraph from '../Dashboard/Stats'
+import Leaderboard from "./Leaderboard/Leaderboard"
+import Stats from './Stats'
+import StatusGraph from './StatusGraph'
+import HelpPopup from '../Help/HelpPopup'
 const Profile = () => {
   return (
-    <div className='w-screen h-screen relative'>
+    <div className='w-screen h-screen relative overflow-hidden'>
         <div className='z-10 absolute left-24 top-[12%]'>
         <ProfileCard/>
         </div>
-        <div className='z-10 absolute top-[44%] left-[16%]'>
+        <div className='z-10 absolute top-[50%] left-[25%]'>
           <StatusGraph/>
         </div>
       <div className='mask relative z-1 w-screen h-screen overflow-hidden '>
@@ -22,6 +24,7 @@ const Profile = () => {
       <div className='absolute right-20 top-[15%] z-100'>
         <Leaderboard/>
       </div>
+
     </div>
   )
 }

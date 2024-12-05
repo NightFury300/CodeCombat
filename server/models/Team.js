@@ -13,6 +13,10 @@ const teamSchema = new mongoose.Schema({
     min: 1,
     max: 4,  // A team can have a maximum of 4 members
   },
+  passkey:{
+    type:String,
+    required:true
+  },
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,

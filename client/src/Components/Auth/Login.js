@@ -31,12 +31,10 @@ const Login = () => {
       
       // Store the token in sessionStorage
       sessionStorage.setItem('token', res.data.token);
-      console.log(res.data)
       login(res.data); // Save user data to context
 
-      // sessionStorage.setItem('user',response.data.username)
 
-      navigate('/battle');
+      navigate('/profile');
     } catch (error) {
       console.error('Error during Google login:', error);
       alert('Login failed, please try again');

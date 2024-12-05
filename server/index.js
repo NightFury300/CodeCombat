@@ -23,7 +23,7 @@ app.use(
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
@@ -32,11 +32,11 @@ const contestRoutes = require('./routes/contestRoutes');
 const teamRoutes = require('./routes/teamRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-app.get('/',(req,res)=>{
-  res.send("Welcome to codecombat api")
-})
+const codeStatmentRoutes=require('./routes/codeStatementsRoutes')
+
 app.use('/api/contest', contestRoutes);
-app.use('/api/contest', teamRoutes); // Avoid route conflict
+app.use('/api/contest', teamRoutes); 
+app.use('/api/codestatment',codeStatmentRoutes)
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 

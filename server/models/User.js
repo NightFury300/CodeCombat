@@ -9,7 +9,10 @@ const userSchema = new mongoose.Schema({
     contestsParticipated: { type: Number, default: 0 },
     contestsWon: { type: Number, default: 0 },
     contestsLost: { type: Number, default: 0 },
+    rank:{type:Number, default: 0},
+    rating:{type:Number, default: 0}
   },
+
 });
 
 const User = mongoose.model('User', userSchema);

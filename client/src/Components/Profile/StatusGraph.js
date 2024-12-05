@@ -1,0 +1,86 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { useUser } from '../../Contexts/UserContext'; // Import the custom hook
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const StatusGraph = () => {
+  const [error, setError] = useState(null); // State to store error message
+  const [loading, setLoading] = useState(true); // State for loading indicator
+  const { user } = useUser(); 
+  const [userData, setUserData] = useState({
+    contestsParticipated: 0,
+    contestsWon: 0,
+    contestsLost: 0,
+  });
+
+  useEffect(() => {
+    // Fetch only when user is available
+    if (user?.userId) {
+      const fetchUserStats = async () => {
+        try {
+          const userId = user.userId;
+          const response = await axios.get(`http://localhost:5000/user/${userId}`);
+          setUserData(response.data.user.statistics);
+          setLoading(false);
+        } catch (err) {
+          setError('Failed to fetch user statistics');
+          setLoading(false);
+        }
+      };
+
+      fetchUserStats();
+    }
+  }, [user]); // Dependency on user to refetch when it changes
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  // Calculate percentages for the Doughnut chart
+  const totalCombats = userData.contestsParticipated || 1; // Prevent division by zero
+  const combatsWonPercentage = ((userData.contestsWon || 0) / totalCombats) * 100;
+  const combatsLostPercentage = ((userData.contestsLost || 0) / totalCombats) * 100;
+
+  const data = {
+    datasets: [
+      {
+        label: 'Statistics',
+        data: [combatsWonPercentage, combatsLostPercentage, totalCombats],
+        backgroundColor: ['#3578FF', '#FF7B0A', '#FFCB01'],
+        borderColor: ['#3578FF', '#FF7B0A', '#FFCB01'],
+      },
+    ],
+    labels: ['Combats Won', 'Combats Lost', 'Total combats'],
+
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right', // Position legend to the right
+        labels: {
+          font: {
+            size: 14, // Adjust font size for clarity
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="h-[400px] w-[500px]">
+      <Doughnut data={data} options={options} />
+    </div>
+  );
+};
+
+export default StatusGraph;
