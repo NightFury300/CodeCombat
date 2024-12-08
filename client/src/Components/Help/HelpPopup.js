@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MdSupportAgent } from "react-icons/md";
 
 const HelpPopup = () => {
   const [isOpen, setIsOpen] = useState(false); // State to manage popup visibility
@@ -12,10 +13,10 @@ const HelpPopup = () => {
     <div>
       {/* Help Button */}
       <button
-        className="fixed bottom-6 right-6 bg-black text-white py-3 px-6 rounded-full text-lg hover:bg-gray-700 transition"
+        className="fixed bottom-6 right-6 bg-black text-white p-5 rounded-full text-lg hover:bg-gray-700 transition"
         onClick={togglePopup}
       >
-        Help & Support
+        <MdSupportAgent className='w-full h-full'/>
       </button>
 
       {/* Popup */}
