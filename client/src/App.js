@@ -13,7 +13,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Editor from './Components/Editor/CodeEditor';
 import { UserProvider } from './Contexts/UserContext';
 import ResultPage from './Components/Result/Result';
-import ProtectedRoute from './Components/ProtectedRoute'; // Import ProtectedRoute
+import ProtectedRoute from './Components/ProtectedRoute'; 
 import PracticePage from './Pages/Practice';
 
 function App() {
@@ -61,25 +61,19 @@ function App() {
             <Route
               path="/contest/:contestId"
               element={
-                <ProtectedRoute>
                   <JoinTeamPage />
-                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/team/:teamId/code-editor"
               element={
-                <ProtectedRoute>
                   <Editor />
-                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/result/:teamId"
               element={
-                <ProtectedRoute>
                   <ResultPage />
-                </ProtectedRoute>
               }
             />
             <Route

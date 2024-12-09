@@ -30,18 +30,18 @@ const CodeEditor = () => {
   useEffect(() => {
     const savedCode = localStorage.getItem("savedCode");
     const savedScore = localStorage.getItem("teamScore");
-    // const fetchTeamScore = async () => {
-    //   try {
-    //     const response = await axios.get(
-    //       `http://localhost:5000/api/contest/team/${teamId}`
-    //     );
-
-    //     console.log(response.data.score)
-    //     // setTeamScore(response.data.score);
-    //           } catch (error) {
-    //     console.error("Error fetching team score:", error);
-    //   }
-    // };
+    const fetchTeamScore = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/contest/team/${teamId}`
+        );
+        setTeamScore(response.data.score)
+        console.log(response.data.score)
+        // setTeamScore(response.data.score);
+              } catch (error) {
+        console.error("Error fetching team score:", error);
+      }
+    };
     if (savedCode) setCode(savedCode);
     if (savedScore) setTeamScore(Number(savedScore));
 
@@ -66,7 +66,7 @@ const CodeEditor = () => {
     socket.current.on("message", (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   });
-  // fetchTeamScore()
+  fetchTeamScore()
   fetchTasks()
   // Cleanup on component unmount
   return () => {
@@ -415,11 +415,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   
       updatedScores[taskId] = { score: taskScore, passedInputs };
       setTaskScores(updatedScores);
-  
+
       // Calculate and update total team score
       const totalTeamScore = Object.values(updatedScores).reduce((total, task) => total + task.score, 0);
-      setTeamScore(totalTeamScore);
-  
+      await axios.put(`http://localhost:5000/api/contest/team/${teamId}/score`, { score:totalTeamScore });
+
       // Display results
       const formattedResults = results.map((result, index) => ({
         input: testcases[index].input,
