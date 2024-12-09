@@ -14,7 +14,7 @@ const Leaderboard = () => {
         
         // Assuming the response contains a 'leaderboard' array
         setUsers(response.data.leaderboard || []); // Ensure it's always an array
-
+        console.log(users)
       } catch (err) {
         setError(err.message);
       } finally {

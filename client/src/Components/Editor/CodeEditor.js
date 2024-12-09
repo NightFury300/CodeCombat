@@ -24,25 +24,24 @@ const CodeEditor = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const tasksPerPage = 1;
 
 
   // Persistent data - load from localStorage
   useEffect(() => {
     const savedCode = localStorage.getItem("savedCode");
     const savedScore = localStorage.getItem("teamScore");
-    const fetchTeamScore = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/contest/team/${teamId}`
-        );
+    // const fetchTeamScore = async () => {
+    //   try {
+    //     const response = await axios.get(
+    //       `http://localhost:5000/api/contest/team/${teamId}`
+    //     );
 
-        console.log(response.data.score)
-        setTeamScore(response.data.score);
-              } catch (error) {
-        console.error("Error fetching team score:", error);
-      }
-    };
+    //     console.log(response.data.score)
+    //     // setTeamScore(response.data.score);
+    //           } catch (error) {
+    //     console.error("Error fetching team score:", error);
+    //   }
+    // };
     if (savedCode) setCode(savedCode);
     if (savedScore) setTeamScore(Number(savedScore));
 
@@ -67,7 +66,7 @@ const CodeEditor = () => {
     socket.current.on("message", (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   });
-  fetchTeamScore()
+  // fetchTeamScore()
   fetchTasks()
   // Cleanup on component unmount
   return () => {
@@ -343,7 +342,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     setTestResults([]);
     try {
       const selectedTask = tasks[currentPage];
-      const taskId = currentPage; // Use currentPage or unique identifier for the task
+      const taskId = currentPage;
       const testcases = selectedTask.testcases;
   
       const submissions = testcases.map((testcase) => ({
@@ -385,19 +384,42 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             result = resultResponse.data;
             status = result.status.id;
             if (status === 3 || status > 3) break; // Success or error
-            await sleep(500);
+            await sleep(500); // Wait 500ms before retrying
           }
           return result;
         })
       );
   
-      // Calculate score for the task
-      const taskScore = calculateScore(taskId, testcases, results);
-
-      setTeamScore((prevTeamScore) => prevTeamScore + (taskScore - (taskScores[taskId]?.score || 0)));
-      console.log(teamScore)
-      // await axios.put(`http://localhost:5000/api/contest/team/${teamId}/score`, { score: teamScore })
-
+      // Calculate and update task score
+      const questionMaxScore = 100; // Maximum score per question
+      const testcaseScore = questionMaxScore / testcases.length; // Score per test case
+  
+      const updatedScores = { ...taskScores };
+  
+      if (!updatedScores[taskId]) {
+        updatedScores[taskId] = { score: 0, passedInputs: new Set() };
+      }
+  
+      let taskScore = updatedScores[taskId].score;
+      const passedInputs = updatedScores[taskId].passedInputs;
+  
+      results.forEach((result, index) => {
+        const input = testcases[index].input;
+        const passed = result.status.id === 3;
+  
+        if (passed && !passedInputs.has(input)) {
+          taskScore += testcaseScore;
+          passedInputs.add(input);
+        }
+      });
+  
+      updatedScores[taskId] = { score: taskScore, passedInputs };
+      setTaskScores(updatedScores);
+  
+      // Calculate and update total team score
+      const totalTeamScore = Object.values(updatedScores).reduce((total, task) => total + task.score, 0);
+      setTeamScore(totalTeamScore);
+  
       // Display results
       const formattedResults = results.map((result, index) => ({
         input: testcases[index].input,
@@ -411,7 +433,6 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       setOutput(
         `${totalPassed}/${testcases.length} test cases passed. Task Score: ${taskScore}`
       );
-      console.log("Updated Task Scores:", taskScores);
     } catch (error) {
       setOutput(`Error evaluating test cases: ${error.message}`);
       console.error("Error details:", error);
@@ -419,37 +440,8 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       setLoading(false);
     }
   };
-  const calculateScore = (taskId, testcases, results) => {
-    const questionMaxScore = 100; // Maximum score per question
-    const testcaseScore = questionMaxScore / testcases.length; // Score per test case
   
-    // Clone existing taskScores state to modify
-    const updatedScores = { ...taskScores };
   
-    // Initialize score for the task if not already present
-    if (!updatedScores[taskId]) {
-      updatedScores[taskId] = { score: 0, passedInputs: new Set() };
-    }
-  
-    let taskScore = updatedScores[taskId].score; // Retrieve existing score for this task
-    const passedInputs = updatedScores[taskId].passedInputs; // Retrieve set of passed inputs
-  
-    results.forEach((result, index) => {
-      const input = testcases[index].input; // Unique identifier for test case
-      const passed = result.status.id === 3; // Check if the test case passed
-  
-      if (passed && !passedInputs.has(input)) {
-        taskScore += testcaseScore; // Add score for the test case
-        passedInputs.add(input); // Mark this input as scored
-      }
-    });
-  
-    // Update the task score and passed inputs in the state
-    updatedScores[taskId] = { score: taskScore, passedInputs };
-    setTaskScores(updatedScores);
-  
-    return taskScore; // Return the computed score for the task
-  };
   
   
   
@@ -490,7 +482,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
         {/* Pagination */}
         <div className="p-4  flex justify-center gap-10 items-center">
-          <div className="text-lg">Score: {Math.floor(teamScore)}</div>
+          <div className="text-lg">Score: {teamScore}</div>
           <button
             onClick={() => handlePagination("prev")}
             className="px-4 py-2 mx-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"

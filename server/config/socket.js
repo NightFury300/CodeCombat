@@ -11,12 +11,16 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
 
+    
+    
+    
     // Handle joining a room (team-specific)
     socket.on("joinRoom", (teamId) => {
       socket.join(teamId);
       console.log(`User ${socket.id} joined room: ${teamId}`);
     });
-
+    
+    
     // Listen for messages and broadcast to the specific room
     socket.on("message", ({ teamId, content, sender }) => {
     console.log('Received message from teamId:', teamId);

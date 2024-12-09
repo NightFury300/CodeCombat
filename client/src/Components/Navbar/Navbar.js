@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className='w-screen h-16 bg-[#8543F6] text-white flex items-center justify-around p-4 '>
+    <div className='w-screen h-16 bg-[#8543F6] text-white flex items-center justify-around p-4 z-100'>
       {/* Home Link */}
       <Link to="/" className="text-white hover:text-gray-300">Home</Link>
       <Link to="/profile" className="text-white hover:text-gray-300">profile</Link>

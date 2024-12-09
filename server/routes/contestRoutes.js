@@ -11,5 +11,7 @@ router.get('/all', contestController.getAllContests);
 // Route to join a contest by ID
 router.get('/:contestId/join', contestController.joinContest);
 
+// Get a specfic contest 
+router.get('/:contestId/', contestController.getContestDetails);
 
 module.exports = router;

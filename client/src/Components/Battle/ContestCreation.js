@@ -3,11 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const ContestCreation = () => {
-  const [name, setName] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
   const [contests, setContests] = useState([]);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Fetch available contests when the component mounts
@@ -15,99 +11,68 @@ const ContestCreation = () => {
     const fetchContests = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/contest/all');
-        setContests(response.data); // Expecting contests to contain _id field
+        setContests(response.data); // Assuming response contains contests with `_id`, `name`, `startTime`, and `endTime`
       } catch (error) {
         console.error('Error fetching contests:', error);
       }
     };
     fetchContests();
-  }, [contests]); // Don't need to track contests here, ideally fetch once
-
-  // Function to create a contest
-  const createContest = async () => {
-    if (!name || !startTime || !endTime) {
-      alert("All fields are required");
-      return;
-    }
-
-    setLoading(true);
-    const contestData = { name, startTime, endTime };
-
-    try {
-      const response = await axios.post('http://localhost:5000/api/contest/create', contestData);
-      setContests(prevContests => [...prevContests, response.data]); // response.data should contain the contest with _id
-      setName('');
-      setStartTime('');
-      setEndTime('');
-    } catch (error) {
-      console.error('Error creating contest:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, []);
 
   // Function to handle joining a contest
   const joinContest = (contestId) => {
-    console.log(contestId);
-    navigate(`/contest/${contestId}/`); // Use _id instead of contestId
+    
+    navigate(`/contest/${contestId}/`); // Navigate to contest details
+  };
+  const getBackgroundColor = (index) => {
+    const colors = ['bg-orange-500', 'bg-blue-500', 'bg-yellow-500'];
+    return colors[index % colors.length]; // Cycle through colors
   };
 
-  // Function to check if contest has started
-  const getContestStatus = (startTime) => {
-    const currentTime = Date.now();
-    return currentTime >= new Date(startTime).getTime() ? 'Started' : 'Not Started';
-  };
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6">Create a Contest</h2>
-    
-      <div className='flex gap-4'>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Contest Name"
-          className="mb-4 p-2 border"
-        />
-        <input
-          type="datetime-local"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          className="mb-4 p-2 border"
-        />
-        <input
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          className="mb-4 p-2 border"
-        />
-      </div>
-
-      <button onClick={createContest} className="bg-blue-500 text-white py-2 px-4 rounded">
-        {loading ? 'Creating Contest...' : 'Create Contest'}
-      </button>
-
-      <div className="mt-6">
-        <h3 className="text-xl font-bold mb-4">Available Contests</h3>
-
+    <div className="container mx-auto p-6 mt-80">
+      <h2 className="text-2xl font-bold text-center mb-6">Available Contests</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {contests.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {contests.map(contest => (
+          contests.map((contest,index) => (
+            <div
+              key={contest._id}
+              className={`block rounded-lg  ${getBackgroundColor(index)} shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700`}>
               <div
-                key={contest._id}  // Use _id as the unique identifier for MongoDB
-                className="border rounded-lg shadow-lg p-4 cursor-pointer"
-                onClick={() => joinContest(contest._id)}  // Use _id to navigate
-              >
-                <h4 className="font-semibold text-lg">{contest.name}</h4>
-                <p>Start Time: {new Date(contest.startTime).toLocaleString()}</p>
-                <p>End Time: {new Date(contest.endTime).toLocaleString()}</p>
-                <p>Status: {getContestStatus(contest.startTime)}</p>
+                className="relative overflow-hidden bg-cover bg-no-repeat">
+                <img
+                  className="rounded-t-lg"
+                  src="https://tecdn.b-cdn.net/img/new/standard/nature/186.jpg"
+                  alt={contest.name}
+                />
+                <a href="#!">
+                  <div
+                    className="absolute bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-[hsla(0,0%,98%,0.15)] bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100"></div>
+                </a>
               </div>
-            ))}
-          </div>
+              <div className="p-6">
+                <h5 className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">
+                  {contest.name}
+                </h5>
+                <p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
+                  Start Time: {new Date(contest.startTime).toLocaleString()}
+                </p>
+                <p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
+                  {contest.description}
+                </p>
+                <button
+                  onClick={() => joinContest(contest._id)}
+                  type="button"
+                  className="mt-4 w-full rounded bg-blue-600 px-4 py-2 text-white font-semibold text-sm shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition">
+                       Join Contest
+                </button>
+
+              </div>
+            </div>
+          ))
         ) : (
-          <div className="text-center text-xl text-gray-600">
+          <div className="text-center text-xl text-gray-600 col-span-full">
             <p>😞 Sorry, no contests are available right now.</p>
           </div>
         )}

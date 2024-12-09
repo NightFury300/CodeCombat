@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../Contexts/UserContext'; // Import the custom hook
 import Stats from './Stats';
+import profilePic from '../../assets/profile.png'
+
 
 const ProfileCard = () => {
   const { user } = useUser(); 
@@ -40,7 +42,7 @@ const ProfileCard = () => {
   return (
     <div className="bg-gray-100 h-[350px] w-[1156px] rounded-2xl relative">
       <div className="bg-gray-200 h-[110px] w-[110px] rounded-full absolute -top-[20%] left-[45%] flex items-center justify-center">
-        <img src={`https://lh3.googleusercontent.com/a-/AOh14${profile}`} alt="profile" />
+        <img src={profilePic} alt={profilePic} />
       </div>
       <div className="info h-32 w-full flex flex-col items-center justify-end p-1">
         <p className="text-gray-400 font-semibold">{user.username}</p>

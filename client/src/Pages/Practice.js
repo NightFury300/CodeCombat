@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 import HelpPopup from "../Components/Help/HelpPopup";
 
 const PracticePage = () => {
@@ -11,33 +12,126 @@ const PracticePage = () => {
   const [output, setOutput] = useState("");
   const [notes, setNotes] = useState("");
 
-  const runCode = () => {
-    try {
-      let capturedOutput = "";
+  // Judge0 API endpoint and headers
+  const JUDGE0_API_URL = "https://judge0-ce.p.rapidapi.com/submissions";
+  const API_KEY = "4de953dca3msh9e69eb61e89af05p1b21a7jsn7ebf34d234a5"; // Use your own API key here
 
-      if (language === "javascript") {
-        const captureLog = (msg) => (capturedOutput += `${msg}\n`);
-        const originalLog = console.log;
-        console.log = captureLog;
-        eval(code);
-        console.log = originalLog;
-        setOutput(capturedOutput || "No output");
-      } else if (language === "python") {
-        if (window.pyodide) {
-          window.pyodide
-            .runPythonAsync(code)
-            .then((result) => setOutput(result || "No output"))
-            .catch((err) => setOutput(`Error: ${err.message}`));
-        } else {
-          setOutput("Python environment not available.");
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const runCode = async () => {
+    setOutput("Running...");
+    try {
+      // Prepare the submission payload
+      const languageId = getLanguageId(language); // Define this function to get the language ID
+      const body = {
+        source_code: code,
+        language_id: languageId,
+      };
+  
+      // Send the code to Judge0 API for evaluation
+      const response = await axios.post(
+        "https://judge0-ce.p.rapidapi.com/submissions",
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-RapidAPI-Key": "4de953dca3msh9e69eb61e89af05p1b21a7jsn7ebf34d234a5", // Use your RapidAPI Key here
+            "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+          },
         }
-      } else if (language === "java") {
-        setOutput("Java execution is currently not supported.");
+      );
+  
+      const token = response.data.token;
+  
+      // Poll for the result from Judge0
+      let result;
+      while (true) {
+        const resultResponse = await axios.get(
+          `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
+          {
+            headers: {
+              "X-RapidAPI-Key": "4de953dca3msh9e69eb61e89af05p1b21a7jsn7ebf34d234a5",
+              "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+            },
+          }
+        );
+  
+        result = resultResponse.data;
+  
+        // Check if the status is "completed"
+        if (result.status.id === 3 || result.status.id > 3) {
+          break;
+        }
+  
+        // If not completed, wait for a while and retry
+        await sleep(500); // sleep function can be defined as `const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));`
       }
-    } catch (err) {
-      setOutput(`Error: ${err.message}`);
+  
+      // Process the output from the result
+      if (result.status.id === 3) {
+        setOutput(result.stdout || "No output");
+      } else {
+        setOutput(`Error: ${result.stderr || "Unknown error"}`);
+      }
+  
+    } catch (error) {
+      setOutput(`Error: ${error.message}`);
+      console.error("Error details:", error);
     }
   };
+  
+  // Helper function to map language to its corresponding Judge0 language ID
+  const getLanguageId = (language) => {
+    switch (language) {
+      case "javascript":
+        return 63; // Language ID for JavaScript
+      case "python":
+        return 71; // Language ID for Python
+      case "java":
+        return 62; // Language ID for Java
+      default:
+        return 63; // Default to JavaScript if language is unsupported
+    }
+  };
+  
+
+  // Function to fetch result from Judge0 using the token
+  const getResult = async (token) => {
+    while (true) {
+      const resultResponse = await axios.get(
+        `${JUDGE0_API_URL}/${token}`,
+        {
+          headers: {
+            "X-RapidAPI-Key": API_KEY,
+            "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+          },
+        }
+      );
+
+      const result = resultResponse.data;
+      const status = result.status.id;
+
+      if (status === 3 || status > 3) {
+        return result;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 500ms before retrying
+    }
+  };
+
+  // Mapping language to Judge0 language ID
+  // const getLanguageId = (language) => {
+  //   switch (language) {
+  //     case "javascript":
+  //       return 63; // Judge0 language ID for JavaScript
+  //     case "python":
+  //       return 71; // Judge0 language ID for Python
+  //     case "java":
+  //       return 62; // Judge0 language ID for Java
+  //     default:
+  //       return 63; // Default to JavaScript
+  //   }
+  // };
 
   const back = () => {
     navigate("/battle");
@@ -111,7 +205,6 @@ const PracticePage = () => {
         </pre>
       </div>
       <HelpPopup/>
-
     </div>
   );
 };

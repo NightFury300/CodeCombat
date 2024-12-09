@@ -10,6 +10,7 @@ exports.createContest = async (req, res) => {
     // Create a new contest document
     const newContest = new Contest({
       name,
+      description,
       startTime,
       endTime,
     });

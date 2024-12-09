@@ -24,6 +24,8 @@ const StatusGraph = () => {
           const userId = user.userId;
           const response = await axios.get(`http://localhost:5000/user/${userId}`);
           setUserData(response.data.user.statistics);
+          console.log(response.data.user.statistics);
+          
           setLoading(false);
         } catch (err) {
           setError('Failed to fetch user statistics');
@@ -45,19 +47,19 @@ const StatusGraph = () => {
 
   // Calculate percentages for the Doughnut chart
   const totalCombats = userData.contestsParticipated || 1; // Prevent division by zero
-  const combatsWonPercentage = ((userData.contestsWon || 0) / totalCombats) * 100;
-  const combatsLostPercentage = ((userData.contestsLost || 0) / totalCombats) * 100;
+  const rating = (userData.rating || 0) * 100;
+  // const combatsLostPercentage = ((userData.contestsLost || 0) / totalCombats) * 100;
 
   const data = {
     datasets: [
       {
         label: 'Statistics',
-        data: [combatsWonPercentage, combatsLostPercentage, totalCombats],
-        backgroundColor: ['#3578FF', '#FF7B0A', '#FFCB01'],
-        borderColor: ['#3578FF', '#FF7B0A', '#FFCB01'],
+        data: [rating, totalCombats],
+        backgroundColor: ['#3578FF', '#FFCB01'],
+        borderColor: ['#3578FF', '#FFCB01'],
       },
     ],
-    labels: ['Combats Won', 'Combats Lost', 'Total combats'],
+    labels: ['Rating',  'Total combats'],
 
   };
 

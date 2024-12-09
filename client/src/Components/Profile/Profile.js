@@ -4,9 +4,8 @@ import RectangleTop from "../../assets/Rectangle 3@1x.png"
 import RectangleBottom from "../../assets/Rectangle 1@3x.png"
 import ProfileCard from "./ProfileCard"
 import Leaderboard from "./Leaderboard/Leaderboard"
-import Stats from './Stats'
 import StatusGraph from './StatusGraph'
-import HelpPopup from '../Help/HelpPopup'
+import {Link} from 'react-router-dom'
 const Profile = () => {
   return (
     <div className='w-screen h-screen relative overflow-hidden'>
@@ -24,7 +23,14 @@ const Profile = () => {
       <div className='absolute right-20 top-[15%] z-100'>
         <Leaderboard/>
       </div>
-
+      <div className="mt-10 absolute bottom-[20%] right-40">
+        <Link
+          to={`/battle/`}
+          className="inline-block px-14 py-6 text-white cursor-pointer bg-violet-600 rounded-full shadow-lg hover:bg-violet-700 focus:outline-none transition-colors duration-300"
+        >
+          Move to Battle Ground
+        </Link>
+      </div>
     </div>
   )
 }

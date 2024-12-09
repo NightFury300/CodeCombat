@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 
 import Login from './Components/Auth/Login';
@@ -23,6 +23,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<HomePage />} />
+
+            {/* Protected Routes */}
             <Route
               path="/login"
               element={
@@ -39,39 +41,58 @@ function App() {
                 </GoogleOAuthProvider>
               }
             />
+
             <Route
               path="/profile"
               element={
+                <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/battle"
               element={
+                <ProtectedRoute>
                   <BattlePage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId"
               element={
+                <ProtectedRoute>
                   <JoinTeamPage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/team/:teamId/code-editor"
               element={
+                <ProtectedRoute>
                   <Editor />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/result/:teamId"
               element={
+                <ProtectedRoute>
                   <ResultPage />
+                </ProtectedRoute>
               }
             />
-            <Route path="/practice" element={<PracticePage />} /> {/* Catch-all route for 404 */}
-            <Route path="/profile" element={<ProfilePage/>}/>
-            <Route path="*" element={<ErrorPage />} /> {/* Catch-all route for 404 */}
+            <Route
+              path="/practice"
+              element={
+                <ProtectedRoute>
+                  <PracticePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-all route for 404 */}
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </Router>
       </UserProvider>
