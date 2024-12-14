@@ -11,8 +11,6 @@ exports.createContest = async (req, res) => {
     const newContest = new Contest({
       name,
       description,
-      startTime,
-      endTime,
     });
 
     // Save the contest to the database

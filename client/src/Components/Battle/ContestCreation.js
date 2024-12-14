@@ -31,7 +31,7 @@ const ContestCreation = () => {
 
 
   return (
-    <div className="container mx-auto p-6 mt-80">
+    <div className=" h-screen mx-auto p-6 mt-80">
       <h2 className="text-2xl font-bold text-center mb-6">Available Contests</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {contests.length > 0 ? (
@@ -55,9 +55,9 @@ const ContestCreation = () => {
                 <h5 className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">
                   {contest.name}
                 </h5>
-                <p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
+                {/* <p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
                   Start Time: {new Date(contest.startTime).toLocaleString()}
-                </p>
+                </p> */}
                 <p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
                   {contest.description}
                 </p>

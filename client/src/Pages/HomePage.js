@@ -2,9 +2,13 @@ import React from "react";
 import HomeTopCard from "../Components/Home/HomeTopCard";
 import HomeBottomCard from "../Components/Home/HomeBottomCard";
 import { useNavigate } from "react-router-dom";
-
+import { useUser } from '../Contexts/UserContext';
+import { FaUser } from "react-icons/fa";
+import HelpPopup from '../Components/Help/HelpPopup'
 const HomePage = () => {
   const navigate = useNavigate();
+  const { user } = useUser(); // Access user context
+
   const topCardsData = [
     {
       title: "75 Days DSA Sheet",
@@ -48,18 +52,40 @@ const HomePage = () => {
       color: "purple",
     },
   ];
-  const handleSignIn=()=>{
-    navigate('/login')
-  }
+
+  const handleSignIn = () => {
+    navigate("/login");
+  };
+
+  const handleProfile = () => {
+    navigate("/profile");
+  };
 
   return (
     <div className="container mx-auto p-6 bg-gray-50">
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-white shadow-sm px-6 py-4 mb-8 w-[screen] mx-auto rounded">
         <div className="text-2xl font-bold text-blue-600">Code Combat</div>
-        <button className="border border-violet-500 text-violet-500 px-4 py-2 rounded hover:bg-violet-500 hover:text-white" onClick={handleSignIn}>
-          Sign In
-        </button>
+        {user ? (
+          <div className="flex items-center justify-center gap-2 cursor-pointer"
+          onClick={handleProfile}
+          >
+          <button
+            className="flex items-center justify-center border-2 border-blue-500 text-blue-500 p-2 rounded-full h-10 w-10 hover:bg-blue-500 hover:text-white"
+          >
+            <FaUser className="text-3xl font-bold" />
+          </button>
+          <p className=" text-blue-700 font-semibold">{user.username}</p>
+
+          </div>
+        ) : (
+          <button
+            className="border border-violet-500 text-violet-500 px-4 py-2 rounded hover:bg-violet-500 hover:text-white"
+            onClick={handleSignIn}
+          >
+            Sign In
+          </button>
+        )}
       </nav>
 
       {/* Header Section */}
@@ -101,6 +127,7 @@ const HomePage = () => {
           ))}
         </div>
       </section>
+      <HelpPopup/>
     </div>
   );
 };

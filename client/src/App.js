@@ -15,6 +15,7 @@ import { UserProvider } from './Contexts/UserContext';
 import ResultPage from './Components/Result/Result';
 import ProtectedRoute from './Components/ProtectedRoute'; 
 import PracticePage from './Pages/Practice';
+import CreateContestPage from './Pages/ContestCreationPage'
 
 function App() {
   return (
@@ -82,6 +83,12 @@ function App() {
                 <ProtectedRoute>
                   <PracticePage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                  <CreateContestPage />
               }
             />
 

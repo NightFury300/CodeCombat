@@ -72,7 +72,7 @@ const CodeEditor = () => {
   return () => {
     socket.current.disconnect(); // Disconnect the socket when component is unmounted
   };
-  }, [teamId,teamScore]);
+  }, [teamId,teamScore,taskScores]);
 
 
   // useEffect(() => {

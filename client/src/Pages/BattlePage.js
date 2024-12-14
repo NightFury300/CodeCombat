@@ -5,7 +5,7 @@ import HelpPopup from '../Components/Help/HelpPopup'
 
 const BattlePage = () => {
   return (
-    <div className='overflow-hidden'>
+    <div className='overflow-x-hidden'>
         <Navbar/>
         <Battle/>
         <HelpPopup/>

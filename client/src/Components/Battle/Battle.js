@@ -6,7 +6,7 @@ import ContestCreation from './ContestCreation';
 
 const Battle = () => {
   return (
-    <div className='w-screen h-screen relative flex items-center justify-center overflow-hidden'>
+    <div className='w-screen h-screen relative flex items-center justify-center overflow-x-hidden'>
       {/* Background images */}
       <div className='absolute w-full h-full overflow-hidden'>
         <img

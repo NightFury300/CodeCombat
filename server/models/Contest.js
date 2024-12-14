@@ -11,11 +11,11 @@ const contestSchema = new mongoose.Schema({
   },
   startTime: { 
     type: Date, 
-    required: true 
+    // required: true 
   },
   endTime: { 
     type: Date, 
-    required: true 
+    // required: true 
   },
   status: { 
     type: String, 

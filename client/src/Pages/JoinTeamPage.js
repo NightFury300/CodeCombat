@@ -42,7 +42,7 @@ const TeamCreation = () => {
       }
     };
     fetchTeams();
-  }, [contestId, user]);
+  }, [contestId, user,userTeam]);
 
   const createTeam = async () => {
     if (!teamName || teamSize <= 0 || !passkey) {
@@ -129,7 +129,7 @@ const TeamCreation = () => {
 
       {userTeam ? (
         <div className="bg-green-100 text-green-800 px-4 py-3 rounded mb-6">
-          You are already part of the team <strong>{userTeam.teamName}</strong>.
+          You are joined the team <strong>{userTeam.teamName}</strong> wait for teammates.
         </div>
       ) : (
         <>
