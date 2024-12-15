@@ -82,15 +82,23 @@ const HomePage = () => {
     navigate("/profile");
   };
 
+  const handleMove = () => {
+    navigate("/profile");
+  };
+
   return (
     <div className="container mx-auto p-6 bg-gray-50">
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-white shadow-sm px-6 py-4 mb-8 w-[screen] mx-auto rounded">
         <div className="text-2xl font-bold text-blue-600">Code Combat</div>
         {user ? (
-          <div className="flex items-center justify-center gap-2 cursor-pointer"
+          <div className="flex items-center justify-center gap-2 cursor-pointer ="
           onClick={handleProfile}
           >
+            <div className="p-3 flex items-center justify-center bg-purple-700 text-white rounded-lg mr-8">  
+                      <p className="">Profile</p>
+           </div>
+
           <button
             className="flex items-center justify-center border-2 border-blue-500 text-blue-500 p-2 rounded-full h-10 w-10 hover:bg-blue-500 hover:text-white"
           >
