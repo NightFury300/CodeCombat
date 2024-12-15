@@ -24,7 +24,6 @@ const StatusGraph = () => {
           const userId = user.userId;
           const response = await axios.get(`http://localhost:5000/user/${userId}`);
           setUserData(response.data.user.statistics);
-          console.log(response.data.user.statistics);
           
           setLoading(false);
         } catch (err) {

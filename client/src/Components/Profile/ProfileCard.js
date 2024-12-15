@@ -41,15 +41,15 @@ const ProfileCard = () => {
 
   return (
     <div className="bg-gray-100 h-[350px] w-[1156px] rounded-2xl relative">
-      <div className="bg-gray-200 h-[110px] w-[110px] rounded-full absolute -top-[20%] left-[45%] flex items-center justify-center">
+      <div className="bg-gray-200 h-[150px] w-[150px] rounded-full absolute -top-[20%] left-[45%] flex items-center justify-center overflow-hidden">
         <img src={profilePic} alt={profilePic} />
       </div>
       <div className="info h-32 w-full flex flex-col items-center justify-end p-1">
-        <p className="text-gray-400 font-semibold">{user.username}</p>
+        <p className="text-gray-400 font-semibold text-xl">{user.username}</p>
         <p className="text-gray-400 font-semibold">{user.email}</p>
 
       </div>
-      <div className="social h-16 w-full flex gap-3 items-center justify-center">
+      <div className="social h-16 w-full  flex gap-3 items-center justify-center">
         <div className="bg-black text-white font-semibold h-12 w-28 flex items-center justify-center rounded-3xl">
           Github
         </div>

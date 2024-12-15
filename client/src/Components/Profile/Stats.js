@@ -32,7 +32,6 @@ const Stats = () => {
     }
     
   }, [user]); // Dependency on user to refetch when it changes
-console.log(userData)
   if (loading) {
     return <div>Loading...</div>;
   }

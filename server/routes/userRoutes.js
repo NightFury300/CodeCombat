@@ -7,7 +7,7 @@ const { isAuthenticated } = require('../middleware/auth'); // Assuming the middl
 // Route to get user profile (including statistics)
 router.get('/:userId', getUserProfile);
 // router.get('/', getAllUsers);
-router.put('/update', isAuthenticated, updateUserProfile);
+router.put('/update/:userId', updateUserProfile);
 router.get('/',getLeaderboard)
 router.put('/:userId', updateContestStats);
 
