@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Ellipse from "../../assets/Ellipse 20@1x.png";
 import RectangleTop from "../../assets/Rectangle 3@1x.png";
 import RectangleBottom from "../../assets/Rectangle 1@3x.png";
@@ -12,7 +12,13 @@ const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [githubUrl, setGithubUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
-  const user =useUser()
+  const [userId,setUserId]=useState('')
+  const { user } = useUser(); 
+  useEffect(() => {
+    console.log(user)
+  setUserId(user.userId)
+
+  },[])
   const handleEdit = () => {
     setIsModalOpen(true);
   };
@@ -20,7 +26,7 @@ const Profile = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const userId=user.user.userId
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updates = { github:githubUrl, linkedin:linkedinUrl };

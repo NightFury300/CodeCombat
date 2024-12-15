@@ -14,10 +14,12 @@ const ProfileCard = () => {
   });
   const [profile,setProfile]=useState('')
   const [error, setError] = useState('');
-
+  const [github,setGithub]=useState('')
+  const [linkedin,setLinkedin]=useState('')
   useEffect(() => {
     if (user) {
       const userId=user.userId
+      
       // Fetch user data and statistics
       const fetchUserProfile = async () => {
         try {
@@ -26,6 +28,8 @@ const ProfileCard = () => {
           
           setUserData(response.data.user.statistics);
           setProfile(response.data.user.googleId)
+          setGithub(response.data.user.github)
+          setLinkedin(response.data.user.linkedin)
         } catch (err) {
           setError('Failed to fetch user data');
         }
@@ -50,12 +54,16 @@ const ProfileCard = () => {
 
       </div>
       <div className="social h-16 w-full  flex gap-3 items-center justify-center">
+        <a href={github} target='_blank'>
         <div className="bg-black text-white font-semibold h-12 w-28 flex items-center justify-center rounded-3xl">
           Github
         </div>
+        </a>
+        <a href={linkedin} target='_blank'>
         <div className="bg-blue-600 text-white font-semibold h-12 w-28 flex items-center justify-center rounded-3xl">
           LinkedIn
         </div>
+        </a>
       </div>
       <Stats/>
     </div>
