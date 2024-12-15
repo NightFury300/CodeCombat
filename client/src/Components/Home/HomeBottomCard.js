@@ -1,6 +1,6 @@
 import React from "react";
 
-const HomeBottomCard = ({ title, options, color }) => {
+const HomeBottomCard = ({ title, options, color ,fileUrl}) => {
   return (
     <div
       className={`bg-white rounded-lg shadow-md p-6 border-t-4 border-${color}-500 flex flex-col min-h-[300px]`}
@@ -14,6 +14,9 @@ const HomeBottomCard = ({ title, options, color }) => {
       {/* Buttons */}
       <div className="w-full">
         {options.map((option, index) => (
+          <a href={fileUrl}
+          download
+          >
           <button
             key={index}
             className={`mt-4 w-full bg-transparent border  text-${color}-500 px-4 py-2 rounded hover:bg-yellow-200 ${
@@ -21,7 +24,7 @@ const HomeBottomCard = ({ title, options, color }) => {
             }`}
           >
             {option}
-          </button>
+          </button></a>
         ))}
       </div>
     </div>

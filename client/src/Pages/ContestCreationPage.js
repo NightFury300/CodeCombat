@@ -32,7 +32,7 @@ const ContestCreationPage = () => {
   
     // Hardcoded credentials
     const correctEmail = 'shikar@gmail.com';
-    const correctPassword = 'QWERy@123';
+    const correctPassword = 'QWERY@123';
   
     try {
       // Validate entered email and password
@@ -61,7 +61,7 @@ const ContestCreationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/contests', formData);
+      const response = await axios.post('http://localhost:5000/api/contest/create', formData);
       setSuccessMessage('Contest created successfully!');
       setError(null);
       setFormData({

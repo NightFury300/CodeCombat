@@ -5,14 +5,14 @@ const User = require('../models/User');
 // Create a Contest
 exports.createContest = async (req, res) => {
   try {
-    const { name, description, startTime, endTime } = req.body;
+    const { name, description} = req.body;
 
     // Create a new contest document
     const newContest = new Contest({
       name,
       description,
     });
-
+    
     // Save the contest to the database
     await newContest.save();
 

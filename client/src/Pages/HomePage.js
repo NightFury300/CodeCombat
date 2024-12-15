@@ -5,6 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from '../Contexts/UserContext';
 import { FaUser } from "react-icons/fa";
 import HelpPopup from '../Components/Help/HelpPopup'
+import _75 from '../HomeContent/75sheet.pdf'
+import DBMS from '../HomeContent/DBMS.pdf'
+import SOFT from '../HomeContent/SOFT.pdf'
+import DSA from '../HomeContent/DSA.pdf'
+import DSA_ from '../HomeContent/DSA_.pdf'
+import CN from '../HomeContent/CN.pdf'
+
 const HomePage = () => {
   const navigate = useNavigate();
   const { user } = useUser(); // Access user context
@@ -15,18 +22,24 @@ const HomePage = () => {
       description: "A structured 75-day roadmap to ace DSA with daily questions.",
       buttonLabel: "Boom",
       color: "blue",
+      fileUrl: _75, 
+      
     },
     {
       title: "Complete DSA Sheet",
       description: "A comprehensive sheet covering all important DSA topics.",
       buttonLabel: "Boom",
       color: "green",
+      fileUrl: DSA, 
+
     },
     {
       title: "DSA Roadmap",
       description: "Step-by-step guidance to understand and master DSA.",
       buttonLabel: "Boom",
       color: "purple",
+      fileUrl: DSA_, 
+
     },
   ];
 
@@ -35,21 +48,29 @@ const HomePage = () => {
       title: "Design and Analysis of Algorithms",
       options: ["Handwritten Notes", "Practice Questions", "Explore Course"],
       color: "red",
+      fileUrl: DSA, 
+
     },
     {
-      title: "Software Engineering",
+      title: "Operating System",
       options: ["Handwritten Notes", "Practice Questions", "Explore Course"],
-      color: "blue",
+      color: "",
+      fileUrl: SOFT, 
+
     },
     {
       title: "Computer Networks",
       options: ["Handwritten Notes", "Practice Questions", "Explore Course"],
-      color: "green",
+      color: "",
+      fileUrl: CN, 
+
     },
     {
       title: "Database Management Systems",
       options: ["Handwritten Notes", "Practice Questions", "Explore Course"],
-      color: "purple",
+      color: "",
+      fileUrl: DBMS, 
+
     },
   ];
 
@@ -107,6 +128,7 @@ const HomePage = () => {
             description={card.description}
             buttonLabel={card.buttonLabel}
             color={card.color}
+            fileUrl={card.fileUrl}
           />
         ))}
       </section>
@@ -123,6 +145,8 @@ const HomePage = () => {
               title={card.title}
               options={card.options}
               color={card.color}
+              fileUrl={card.fileUrl}
+
             />
           ))}
         </div>
