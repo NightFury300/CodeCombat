@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ContestCreationPage = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const ContestCreationPage = () => {
     startTime: '',
     endTime: '',
   });
-
+  const navigate=useNavigate()
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,7 +33,7 @@ const ContestCreationPage = () => {
   
     // Hardcoded credentials
     const correctEmail = 'shikar@gmail.com';
-    const correctPassword = 'QWERY@123';
+    const correctPassword = '12345678';
   
     try {
       // Validate entered email and password
@@ -49,6 +50,9 @@ const ContestCreationPage = () => {
     }
   };
   
+  const back = () => {
+    navigate("/battle");
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,8 +126,10 @@ const ContestCreationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-violet-100 flex items-center justify-center">
+    <div className="min-h-screen bg-violet-100 flex items-center justify-center ">
+      
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      
         <h1 className="text-3xl font-semibold text-violet-600 mb-4 text-center">Create a New Contest</h1>
         
         {successMessage && <div className="text-green-600 text-center mb-4">{successMessage}</div>}
@@ -157,6 +163,7 @@ const ContestCreationPage = () => {
           </div>
           
         
+         
 
           <div className="text-center">
             <button
@@ -165,7 +172,13 @@ const ContestCreationPage = () => {
             >
               Create Contest
             </button>
-          </div>
+          </div> 
+          <button
+          onClick={back}
+          className="w-full py-3 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          >
+          Back
+        </button>
         </form>
       </div>
     </div>

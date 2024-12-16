@@ -8,7 +8,7 @@ const Battle = () => {
   return (
     <div className='w-screen h-screen relative flex items-center justify-center overflow-x-hidden'>
       {/* Background images */}
-      <div className='absolute w-full h-full overflow-hidden'>
+      <div className='absolute w-full h-full overflow-x-hidden'>
         <img
           src={Ellipse}
           alt='left-ecllipse'

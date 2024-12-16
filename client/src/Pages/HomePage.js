@@ -82,8 +82,8 @@ const HomePage = () => {
     navigate("/profile");
   };
 
-  const handleMove = () => {
-    navigate("/profile");
+  const handleAdmin = () => {
+    navigate("/admin");
   };
 
   return (
@@ -92,7 +92,7 @@ const HomePage = () => {
       <nav className="flex justify-between items-center bg-white shadow-sm px-6 py-4 mb-8 w-[screen] mx-auto rounded">
         <div className="text-2xl font-bold text-blue-600">Code Combat</div>
         {user ? (
-          <div className="flex items-center justify-center gap-2 cursor-pointer ="
+          <div className="flex items-center justify-center gap-2 cursor-pointer "
           onClick={handleProfile}
           >
             <div className="p-3 flex items-center justify-center bg-purple-700 text-white rounded-lg mr-8">  
@@ -107,13 +107,20 @@ const HomePage = () => {
           <p className=" text-blue-700 font-semibold">{user.username}</p>
 
           </div>
-        ) : (
+        ) : (<div className="flex gap-5">
+          <button
+            className="border bg-violet-500 text-white px-4 py-2 rounded hover:bg-white hover:border hover:border-violet-500 hover:text-violet-500"
+            onClick={handleAdmin}
+          >
+            Admin
+          </button>
           <button
             className="border border-violet-500 text-violet-500 px-4 py-2 rounded hover:bg-violet-500 hover:text-white"
             onClick={handleSignIn}
           >
             Sign In
           </button>
+          </div>
         )}
       </nav>
 

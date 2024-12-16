@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const HomeTopCard = ({ title, description, buttonLabel, color,fileUrl }) => {
-  console.log(color)
+  
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 border-t-4 border-${color}-500 flex flex-col`}>
       <h2 className={`text-xl font-bold text-${color}-500`}>{title}</h2>
