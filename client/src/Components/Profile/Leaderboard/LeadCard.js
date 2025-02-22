@@ -2,10 +2,8 @@ import React from 'react';
 import UserPic from '../../../assets/user.png'
 const LeadCard = ({ user, index }) => {
   
-  // Define a list of colors (orange, yellow, blue, violet)
-  const colors = ['bg-orange-400', 'bg-yellow-400', 'bg-blue-400', 'bg-violet-400'];
+  const colors = ['bg-purple-600', 'bg-indigo-600', 'bg-blue-600', 'bg-violet-600'];
 
-  // Select a color based on the index (you can modify this logic if needed)
   const cardColor = colors[index % colors.length]; // This will loop through colors
 
   return (

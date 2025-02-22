@@ -4,7 +4,7 @@ import Navbar from '../Components/Navbar/Navbar'
 import HelpPopup from '../Components/Help/HelpPopup'
 const ProfilePage = () => {
   return (
-    <div className='overflow-hidden'>
+    <div className='overflow-hidden bg-gray-900'>
       <Navbar/>
       <Profile/>
       <HelpPopup/>

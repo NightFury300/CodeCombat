@@ -22,7 +22,7 @@ const StatusGraph = () => {
       const fetchUserStats = async () => {
         try {
           const userId = user.userId;
-          const response = await axios.get(`http://localhost:5000/user/${userId}`);
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user/${userId}`);
           setUserData(response.data.user.statistics);
           
           setLoading(false);
@@ -54,8 +54,8 @@ const StatusGraph = () => {
       {
         label: 'Statistics',
         data: [rating, totalCombats],
-        backgroundColor: ['#3578FF', '#FFCB01'],
-        borderColor: ['#3578FF', '#FFCB01'],
+        backgroundColor: ['MediumSeaGreen', 'slateblue'],
+        borderColor: ['MediumSeaGreen', 'slateblue'],
       },
     ],
     labels: ['Rating',  'Total combats'],

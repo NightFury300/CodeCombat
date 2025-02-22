@@ -22,7 +22,7 @@ const CreateTeam = ({ contestId }) => {
         contestId
       };
 
-      const response = await axios.post(`http://localhost:5000/api/contest/${contestId}/team/create`, teamData);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/contest/${contestId}/team/create`, teamData);
       alert('Team created successfully');
       setTeamName('');
       setPasskey('');

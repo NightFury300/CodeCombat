@@ -15,8 +15,8 @@ initializeSocket(server); // Pass the server instance for Socket.IO initializati
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Use environment variable for flexibility
-    methods: ['GET', 'POST', 'PUT', 'PATCH'],
+    origin: process.env.FRONTEND_URL, // Use environment variable for flexibility
+    methods: ['GET', 'POST', 'PUT', 'PATCH','HEAD','OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );

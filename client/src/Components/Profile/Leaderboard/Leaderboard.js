@@ -10,7 +10,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/user/');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user/`);
         
         // Assuming the response contains a 'leaderboard' array
         setUsers(response.data.leaderboard || []); // Ensure it's always an array
@@ -33,7 +33,7 @@ const Leaderboard = () => {
 
   return (
     <div className='h-[500px] w-[480px] rounded-2xl flex flex-col gap-4'>
-      <div className='flex items-center justify-center text-4xl'>Leaderboard</div>
+      <div className='flex items-center justify-center text-4xl font-bold text-white'>Leaderboard</div>
       <div className='p-3 rounded-2xl h-[500px] flex flex-col gap-2'>
         {users.map((user,index) => (
           <LeadCard key={user._id} user={user} index={index} /> // Pass individual user to LeadCard

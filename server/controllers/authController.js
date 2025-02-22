@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+//const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Register new user
 exports.signup = async (req, res) => {
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// Google Login
+/* // Google Login
 exports.googleLogin = async (req, res) => {
   const { idToken } = req.body;
  try {
@@ -99,4 +99,4 @@ exports.googleLogin = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Google login failed', error });
   }
-};
+}; */

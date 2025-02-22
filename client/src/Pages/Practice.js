@@ -3,6 +3,7 @@ import MonacoEditor from "react-monaco-editor";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import HelpPopup from "../Components/Help/HelpPopup";
+import Navbar from "../Components/Navbar/Navbar";
 
 const PracticePage = () => {
   const navigate = useNavigate();
@@ -140,13 +141,9 @@ const PracticePage = () => {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
       {/* Header */}
+      <Navbar/>
       <div className="flex justify-between items-center p-4 bg-gray-900 text-white shadow-lg">
-        <button
-          onClick={back}
-          className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md transform hover:scale-105 transition-transform"
-        >
-          Back
-        </button>
+        
         <h1 className="text-xl font-semibold tracking-wider">Practice Ground</h1>
         <div className="flex items-center space-x-4">
           {/* Language Selector */}

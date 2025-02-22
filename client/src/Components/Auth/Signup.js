@@ -1,165 +1,98 @@
 import React, { useState } from 'react';
-import Auth from "../../assets/Auth.png";
-import { FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
+import Navbar from '../Navbar/Navbar';
+import axios from 'axios';
 import { useUser } from '../../Contexts/UserContext';
 
 const Signup = () => {
   const { login } = useUser();
-  const [userData, setUserData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [userData, setUserData] = useState({ username: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Validation function
   const validate = () => {
     let tempErrors = {};
     if (!userData.username.trim()) tempErrors.username = "Username is required";
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!userData.email) {
-      tempErrors.email = "Email is required";
-    } else if (!emailPattern.test(userData.email)) {
-      tempErrors.email = "Email is not valid";
-    }
-    if (!userData.password) {
-      tempErrors.password = "Password is required";
-    } else if (userData.password.length < 8) {
-      tempErrors.password = "Password must be at least 8 characters";
-    }
-
+    if (!userData.email) tempErrors.email = "Email is required";
+    if (!userData.password || userData.password.length < 8) tempErrors.password = "Password must be at least 8 characters";
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  // Handle input field change
-  const handleChange = (e) => {
-    setUserData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  };
+  const handleChange = (e) => setUserData({ ...userData, [e.target.id]: e.target.value });
 
-  // Handle checkbox for agreeing to terms
-  const handleCheckbox = () => setAgreeTerms(!agreeTerms);
-
-  // Submit form to backend
   const submitForm = async (e) => {
-    e.preventDefault();     
-    if (validate()) {
-      setLoading(true); // Start loading state
-      try {
-        const response = await axios.post('http://localhost:5000/auth/signup', userData);
-        if (response.status === 201) {
-          login(response.data); // Set user context
-          navigate('/login'); // Redirect to login page
-        }
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || 'Something went wrong, please try again';
-        setErrors({ backend: errorMessage });
-        console.error('Signup error:', errorMessage);
-      } finally {
-        setLoading(false); // End loading state
-      }
-    }
-  };
-
-  const handleGoogleLogin = async (response) => {
-    if (response.error) {
-      alert('Google login failed, please try again.');
-      return;
-    }
-
-    const idToken = response.credential; // Google ID token
+    e.preventDefault();
+    if (!validate()) return;
     try {
-      const res = await axios.post('http://localhost:5000/auth/google', { idToken });
-      login(res.data); // Set user context
-      navigate('/profile'); // Redirect to profile page
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/signup`, userData);
+      login(response.data);
+      navigate('/login');
     } catch (error) {
-      console.error('Google login failed:', error);
-      alert('Login failed, please try again.');
+      setErrors({ backend: 'Signup failed, try again.' });
     }
   };
+
+  /* const handleGoogleLogin = async (response) => {
+    if (response.error) return alert('Google login failed');
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/google`, { idToken: response.credential });
+      login(res.data);
+      navigate('/');
+    } catch (error) {
+      alert('Google signup failed');
+    }
+  }; */
 
   return (
-    <section className='flex gap-20 h-screen w-screen items-center justify-center'>
-      <div className='bg-gray-100 h-[80vh] w-1/3'>
-        <img src={Auth} alt='Auth' className='h-[full] w-full object-cover' />
-      </div>
-      <div className='h-[750px] w-[900px] bg-[#8543f628] flex items-center justify-center flex-col gap-2 p-2 rounded-md'>
-        <p className='text-3xl font-semibold'>Signup</p>
-        <form className='flex flex-col gap-8 w-full p-10' onSubmit={submitForm}>
-          <div className='flex flex-col gap-2'>
-            <input
-              type='text'
-              id="username"
-              placeholder='Username'
-              className='h-16 w-full rounded-md p-5'
-              value={userData.username}
-              onChange={handleChange}
-            />
-            {errors.username && <p className="text-red-500">{errors.username}</p>}
-
-            <input
-              type='email'
-              id="email"
-              placeholder='Email'
-              className='h-16 w-full rounded-md p-5'
-              value={userData.email}
-              onChange={handleChange}
-            />
-            {errors.email && <p className="text-red-500">{errors.email}</p>}
-
-            <input
-              type='password'
-              id='password'
-              placeholder='Password'
-              className='h-16 w-full rounded-md p-5'
-              value={userData.password}
-              onChange={handleChange}
-            />
-            {errors.password && <p className="text-red-500">{errors.password}</p>}
-            {errors.backend && <p className="text-red-500">{errors.backend}</p>}
-          </div>
-          <span className='flex gap-2 items-center'>
-            <input
-              type='checkbox'
-              className='border-gray-400'
-              checked={agreeTerms}
-              onChange={handleCheckbox}
-            />
-            <p className='text-gray-400'>Agree to terms and conditions</p>
-          </span>
-          <div className='flex flex-col gap-2'>
-            <button
-              type='submit'
-              className='h-16 w-full flex items-center justify-center text-white bg-[#8543f6] font-semibold text-lg rounded-md'
-              disabled={!agreeTerms || loading}
-            >
-              {loading ? 'Signing Up...' : 'Signup'}
-            </button>
-            <div className='w-full flex justify-between px-5 text-gray-400'>
-              <Link to="/login">Login</Link>
-              <p>Forgot Password</p>
-            </div>
-          </div>
+    <>
+      <Navbar/>
+    <section className="flex justify-center items-center h-screen bg-gray-900 text-white">
+      <div className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-semibold text-center">Signup</h2>
+        <form className="mt-6 space-y-4" onSubmit={submitForm}>
+          <input
+            type="text"
+            id="username"
+            placeholder="Username"
+            className="w-full p-3 bg-gray-700 rounded-md focus:ring-2 focus:ring-purple-500"
+            value={userData.username}
+            onChange={handleChange}
+          />
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            className="w-full p-3 bg-gray-700 rounded-md focus:ring-2 focus:ring-purple-500"
+            value={userData.email}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            className="w-full p-3 bg-gray-700 rounded-md focus:ring-2 focus:ring-purple-500"
+            value={userData.password}
+            onChange={handleChange}
+          />
+          <button type="submit" className="w-full p-3 bg-purple-600 hover:bg-purple-700 transition rounded-md">
+            Signup
+          </button>
         </form>
-        <p>or</p>
-        <div className='flex items-center justify-center w-[80%]'>
+        <div className="mt-4 text-center text-gray-400">
+          <Link to="/login" className="hover:text-purple-400">Login</Link>
+        </div>
+        {/* <div className="mt-6 text-center">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={(error) => console.error('Google Login Error:', error)}
-            useOneTap={true}
-            theme="outline"
-            shape="pill"
-            width="100%"
+            theme="dark"
           />
-        </div>
+        </div> */}
       </div>
     </section>
+    </>
   );
 };
 

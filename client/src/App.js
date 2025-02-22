@@ -46,7 +46,9 @@ function App() {
             <Route
               path="/profile"
               element={
+                <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
               }
             />
             <Route
@@ -60,19 +62,25 @@ function App() {
             <Route
               path="/contest/:contestId"
               element={
+                <ProtectedRoute>
                   <JoinTeamPage />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/team/:teamId/code-editor"
               element={
+                <ProtectedRoute>
                   <Editor />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contest/:contestId/result/:teamId"
               element={
+                <ProtectedRoute>
                   <ResultPage />
+                </ProtectedRoute>
               }
             />
             <Route
@@ -90,7 +98,6 @@ function App() {
               }
             />
 
-            {/* Catch-all route for 404 */}
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </Router>

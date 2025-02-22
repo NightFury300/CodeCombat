@@ -6,11 +6,10 @@ const ContestCreation = () => {
   const [contests, setContests] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch available contests when the component mounts
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/contest/all');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/contest/all`);
         setContests(response.data); // Assuming response contains contests with `_id`, `name`, `startTime`, and `endTime`
       } catch (error) {
         console.error('Error fetching contests:', error);
@@ -25,14 +24,14 @@ const ContestCreation = () => {
     navigate(`/contest/${contestId}/`); // Navigate to contest details
   };
   const getBackgroundColor = (index) => {
-    const colors = ['bg-orange-500', 'bg-blue-500', 'bg-yellow-500'];
+    const colors = ['bg-green-600', 'bg-blue-600', 'bg-purple-600'];
     return colors[index % colors.length]; // Cycle through colors
   };
 
 
   return (
     <div className=" h-screen mx-auto p-6 mt-36 mb-40">
-      <h2 className="text-2xl font-bold text-center mb-6">Available Contests</h2>
+      <h2 className="text-3xl font-bold text-white text-center mb-6">Available Contests</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {contests.length > 0 ? (
           contests.map((contest,index) => (
@@ -72,7 +71,7 @@ const ContestCreation = () => {
             </div>
           ))
         ) : (
-          <div className="text-center text-xl text-gray-600 col-span-full">
+          <div className="text-center text-2xl text-gray-300 col-span-full">
             <p>😞 Sorry, no contests are available right now.</p>
           </div>
         )}

@@ -24,7 +24,7 @@ const ResultPage = () => {
     const fetchTeamScore = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/contest/team/${teamId}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/contest/team/${teamId}`
         );
 
         console.log(response.data.score)
@@ -39,7 +39,7 @@ const ResultPage = () => {
     const fetchLeaderboard = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/contest/${contestId}/teams`
+          `${process.env.REACT_APP_BACKEND_URL}/api/contest/${contestId}/teams`
         );
         setLeaderboard(response.data);
       } catch (error) {
@@ -50,7 +50,7 @@ const ResultPage = () => {
     const fetchTeammates = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/contest/${teamId}/members`
+          `${process.env.REACT_APP_BACKEND_URL}/api/contest/${teamId}/members`
         );
         const allMembers = response.data.members;
 
@@ -96,7 +96,7 @@ const ResultPage = () => {
         const userId = teammate._id; // Extract the user ID
         const userRating = ratings[userId]; // Get the rating for this user
         if (userRating !== undefined) { // Ensure a rating exists for this user
-          await axios.put(`http://localhost:5000/user/${userId}`, {
+          await axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/${userId}`, {
             rating: userRating, // Include the rating in the request body
           });
         }
@@ -145,39 +145,46 @@ const ResultPage = () => {
   };
 
   return (
-    <div className="flex flex-col gap-20 items-center p-10">
+    <div className="h-screen w-full flex flex-col items-center bg-gray-900 text-white p-10 gap-20">
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4 text-center">Rate Your Teammates</h2>
-            <div className="flex flex-col gap-4">
-            {teammates.map((teammate) => (
-               <div key={teammate._id} className="flex items-center justify-between gap-4">
-    <span className="text-lg">{teammate.username}</span>
-    <ReactStars
-      count={5}
-      size={24}
-      value={ratings[teammate._id]} // Ensure correct ID is passed here
-      onChange={(value) => handleRatingChange(teammate._id, value)} // Correct ID here as well
-      activeColor="#ffd700"
-    />
-               </div>
-            ))}
-
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4 text-white text-center">
+              Rate Your Teammates
+            </h2>
+            <div className="flex flex-col gap-4 text-white">
+              {teammates.map((teammate) => (
+                <div
+                  key={teammate._id}
+                  className="flex items-center justify-between gap-4"
+                >
+                  <span className="text-lg">{teammate.username}</span>
+                  <ReactStars
+                    count={5}
+                    size={24}
+                    value={ratings[teammate._id]} // Ensure correct ID is passed here
+                    onChange={(value) => handleRatingChange(teammate._id, value)} // Correct ID here as well
+                    activeColor="#ffd700"
+                  />
+                </div>
+              ))}
             </div>
             <button
               onClick={handleSubmitRatings}
-              className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg w-full"
+              className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-500 hover:scale-105 transition-transform text-white rounded-lg w-full"
             >
               Submit Ratings
             </button>
           </div>
         </div>
       )}
-
-      <p className="font-bold text-4xl">Detailed Result</p>
-      <div className="p-16 flex gap-12 w-full">
+  
+      {/* Title */}
+      <p className="font-bold text-4xl text-indigo-600">Detailed Result</p>
+  
+      {/* Main Content */}
+      <div className="p-16 flex flex-col lg:flex-row gap-12 w-full">
         {/* Left side - Donut Chart */}
         <div className="flex flex-col items-center justify-center lg:w-1/2">
           <div className="text-center">
@@ -190,44 +197,42 @@ const ResultPage = () => {
             <Doughnut data={chartData} options={chartOptions} />
           </div>
         </div>
-
+  
         {/* Right side - Leaderboard */}
-        <div className="lg:w-1/2 flex flex-col gap-10 items-center ">
+        <div className="lg:w-1/2 flex flex-col gap-10 items-center">
           <h2 className="text-2xl font-semibold text-center">Leaderboard</h2>
-          <div className="">
+          <div className="w-full flex flex-col items-center">
             {leaderboard.map((team, index) => (
               <div
                 key={team._id}
                 className={`p-6 rounded-lg w-[450px] shadow-lg flex items-center justify-between 
-                  ${index === 0 ? "bg-violet-200" : `bg-gray-${100 + index * 50}`} 
-                  transition-all duration-300 ease-in-out`}
+                    ${index === 0 ? "bg-violet-600" : "bg-gray-800"} 
+                    transition-all duration-300 ease-in-out`}
               >
-                <div
-                  className={`text-3xl font-bold ${
-                    index === 0 ? "text-violet-600" : "text-gray-700"
-                  }`}
-                >
-                  {index+1}
+                <div className="text-3xl font-bold text-gray-200">{index + 1}</div>
+                <div className="text-gray-200 text-xl font-semibold px-4">
+                  {team.teamName}
                 </div>
-                <div className="text-violet-900 text-xl font-semibold px-4">{team.teamName}</div>
-                <div className="text-violet-400 text-xl font-semibold px-4">{Math.floor(team.score)}</div>
+                <div className="text-gray-200 text-xl font-semibold px-4">
+                  {Math.floor(team.score)}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-
+  
       {/* Move to Battle Ground Button */}
-      <div className="mt-10">
+      <div className="">
         <Link
           to={`/battle/`}
-          className="inline-block px-8 py-3 text-white bg-violet-600 rounded-full shadow-lg hover:bg-violet-700 focus:outline-none transition-colors duration-300"
+          className="inline-block px-8 py-3 text-white bg-violet-600 rounded-full shadow-lg hover:bg-violet-500 hover:scale-105 focus:outline-none transition-colors duration-300"
         >
           Move to Battle Ground
         </Link>
       </div>
     </div>
-  );
-};
-
-export default ResultPage;
+  )
+}
+  
+export default ResultPage

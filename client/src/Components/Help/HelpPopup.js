@@ -13,7 +13,7 @@ const HelpPopup = () => {
     <div>
       {/* Help Button */}
       <button
-        className="fixed bottom-6 right-6 bg-black text-white p-5 rounded-full text-lg hover:bg-gray-700 transition"
+        className="fixed bottom-6 right-6 bg-black text-white p-5 rounded-full text-lg hover:bg-gray-700 hover:scale-105 transition-transform transition-duration:200"
         onClick={togglePopup}
       >
         <MdSupportAgent className='w-full h-full'/>
@@ -22,11 +22,11 @@ const HelpPopup = () => {
       {/* Popup */}
       {isOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white w-96 p-6 rounded-lg shadow-lg relative">
+          <div className="bg-gray-900 text-white w-96 p-6 rounded-lg shadow-lg relative">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Help & Support</h2>
               <button
-                className="text-lg text-black font-semibold"
+                className="text-lg text-white hover:text-gray-300 hover:scale-105 transition-transform transition-duration:200 font-semibold"
                 onClick={togglePopup}
               >
                 X
@@ -36,10 +36,10 @@ const HelpPopup = () => {
               <p>If you need assistance, please contact us:</p>
               <ul className="mt-4">
                 <li>
-                  <strong>Phone:</strong> +1 (123) 456-7890
+                  <strong>Email:</strong> shubhsaxena447@gmail.com
                 </li>
                 <li>
-                  <strong>Email:</strong> support@example.com
+                  <strong>Phone:</strong> +1 (123) 456-7890
                 </li>
               </ul>
             </div>

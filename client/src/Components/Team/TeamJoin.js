@@ -10,7 +10,7 @@ const JoinTeam = ({ contestId }) => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/contest/${contestId}/teams`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/contest/${contestId}/teams`);
         setTeams(response.data);
       } catch (error) {
         console.error('Error fetching teams:', error);
@@ -39,7 +39,7 @@ const JoinTeam = ({ contestId }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/contest/${contestId}/team/join`, { teamName, passkey });
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/contest/${contestId}/team/join`, { teamName, passkey });
       alert('Successfully joined the team');
     } catch (error) {
       console.error('Error joining team:', error);

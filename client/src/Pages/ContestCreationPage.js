@@ -1,24 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../Components/Navbar/Navbar";
+import Ellipse from "../assets/Ellipse 20@1x.png";
+import RectangleTop from "../assets/Rectangle 3@1x.png";
+import RectangleBottom from "../assets/Rectangle 1@3x.png";
 
 const ContestCreationPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    startTime: '',
-    endTime: '',
+    name: "",
+    description: "",
+    startTime: "",
+    endTime: "",
   });
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginData, setLoginData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-
-  const [showLoginModal, setShowLoginModal] = useState(true);
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -28,30 +30,17 @@ const ContestCreationPage = () => {
     });
   };
 
-  const handleLoginSubmit = async (e) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
-  
-    // Hardcoded credentials
-    const correctEmail = 'shikar@gmail.com';
-    const correctPassword = '12345678';
-  
-    try {
-      // Validate entered email and password
-      if (loginData.email === correctEmail && loginData.password === correctPassword) {
-        // Simulate successful login
-        setIsLoggedIn(true);
-        setShowLoginModal(false);
-        setError(null);
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (err) {
-      setError('Invalid credentials. Please try again.');
+    const correctEmail = "shubh@gmail.com";
+    const correctPassword = "12345678";
+
+    if (loginData.email === correctEmail && loginData.password === correctPassword) {
+      setIsLoggedIn(true);
+      setError(null);
+    } else {
+      setError("Invalid credentials. Please try again.");
     }
-  };
-  
-  const back = () => {
-    navigate("/battle");
   };
 
   const handleChange = (e) => {
@@ -65,28 +54,38 @@ const ContestCreationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/contest/create', formData);
-      setSuccessMessage('Contest created successfully!');
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/contest/create`, formData);
+      setSuccessMessage("Contest created successfully!");
       setError(null);
       setFormData({
-        name: '',
-        description: '',
+        name: "",
+        description: "",
       });
     } catch (err) {
-      setError('Failed to create contest. Please try again.');
-      setSuccessMessage('');
+      setError("Failed to create contest. Please try again.");
+      setSuccessMessage("");
     }
   };
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-violet-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-          <h1 className="text-3xl font-semibold text-violet-600 mb-4 text-center">Login</h1>
+      <>
+      <Navbar/>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 relative">
+        {/* Background Decorations */}
+        <div className="absolute inset-0 overflow-hidden">
+        
+        </div>
+
+        {/* Login Form */}
+        <div className="bg-gray-700 p-8 rounded-lg shadow-lg w-full max-w-md z-10">
+          <h1 className="text-3xl font-semibold text-white mb-4 text-center">Admin Login</h1>
           {error && <div className="text-red-600 text-center mb-4">{error}</div>}
           <form onSubmit={handleLoginSubmit}>
             <div className="mb-4">
-              <label htmlFor="email" className="block text-violet-700 font-medium">Email:</label>
+              <label htmlFor="email" className="block text-white font-medium">
+                Admin Email:
+              </label>
               <input
                 type="email"
                 id="email"
@@ -94,12 +93,14 @@ const ContestCreationPage = () => {
                 value={loginData.email}
                 onChange={handleLoginChange}
                 required
-                className="w-full p-3 border-2 border-violet-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full p-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
               />
             </div>
 
             <div className="mb-4">
-              <label htmlFor="password" className="block text-violet-700 font-medium">Password:</label>
+              <label htmlFor="password" className="block text-white font-medium">
+                Admin Password:
+              </label>
               <input
                 type="password"
                 id="password"
@@ -107,7 +108,7 @@ const ContestCreationPage = () => {
                 value={loginData.password}
                 onChange={handleLoginChange}
                 required
-                className="w-full p-3 border-2 border-violet-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full p-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
               />
             </div>
 
@@ -122,22 +123,30 @@ const ContestCreationPage = () => {
           </form>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-violet-100 flex items-center justify-center ">
-      
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-      
-        <h1 className="text-3xl font-semibold text-violet-600 mb-4 text-center">Create a New Contest</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 relative">
+      {/* Background Decorations */}
+      <div className="absolute inset-0 overflow-hidden">
         
+        </div>      
+
+      <div className="bg-gray-700 p-8 rounded-lg shadow-lg w-full max-w-md z-10">
+        <h1 className="text-3xl font-semibold text-white mb-4 text-center">
+          Create a New Contest
+        </h1>
+
         {successMessage && <div className="text-green-600 text-center mb-4">{successMessage}</div>}
         {error && <div className="text-red-600 text-center mb-4">{error}</div>}
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-violet-700 font-medium">Contest Name:</label>
+            <label htmlFor="name" className="block text-white font-medium">
+              Contest Name:
+            </label>
             <input
               type="text"
               id="name"
@@ -145,25 +154,24 @@ const ContestCreationPage = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full p-3 border-2 border-violet-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full p-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
           </div>
-          
+
           <div>
-            <label htmlFor="description" className="block text-violet-700 font-medium">Description:</label>
+            <label htmlFor="description" className="block text-white font-medium">
+              Description:
+            </label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
               required
-              className="w-full p-3 border-2 border-violet-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full p-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
               rows="4"
             />
           </div>
-          
-        
-         
 
           <div className="text-center">
             <button
@@ -172,13 +180,13 @@ const ContestCreationPage = () => {
             >
               Create Contest
             </button>
-          </div> 
+          </div>
           <button
-          onClick={back}
-          className="w-full py-3 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            onClick={() => navigate("/battle")}
+            className="w-full py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           >
-          Back
-        </button>
+            Back
+          </button>
         </form>
       </div>
     </div>

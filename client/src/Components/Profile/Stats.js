@@ -19,7 +19,7 @@ const Stats = () => {
       const fetchUserStats = async () => {
         try {
           const userId = user.userId;
-          const response = await axios.get(`http://localhost:5000/user/${userId}`);
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user/${userId}`);
           setUserData(response.data.user.statistics);
           setLoading(false);
         } catch (err) {
@@ -42,9 +42,9 @@ const Stats = () => {
   return (
     <div className='h-[500px]  w-[1156px] rounded-xl flex flex-col gap-3'>
       <div className='status w-full h-40 flex justify-around items-center z-100'>
-         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-orange-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg'>{userData.contestsParticipated}</p></div><p className='font-semibold text-lg text-gray-600'>Total Combat</p></div>
-         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-yellow-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg' >{userData.rank}</p></div><p className='font-semibold text-lg text-gray-600'>Rank</p></div>
-         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-blue-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg'>{Math.ceil(userData.rating)}</p></div><p className='font-semibold text-lg text-gray-600'>Rating</p></div>
+         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-indigo-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg'>{userData.contestsParticipated}</p></div><p className='font-semibold text-lg text-white'>Total Combat</p></div>
+         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-indigo-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg' >{userData.rank}</p></div><p className='font-semibold text-lg text-white'>Rank</p></div>
+         <div className='flex flex-col gap-0.5 w-1/3 items-center justify-center'><div className='h-16 w-16 bg-indigo-400 rounded-full flex items-center justify-center'><p className='text-white font-bold text-lg'>{Math.ceil(userData.rating)}</p></div><p className='font-semibold text-lg text-white'>Rating</p></div>
       </div>
     </div>  
   )
