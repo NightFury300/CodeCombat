@@ -25,7 +25,7 @@ const Navbar = () => {
         {/* Text Container */}
         <div className="flex flex-col leading-tight">
           <span className="text-2xl font-bold text-white group-hover:text-violet-300 transition-colors duration-200">
-            Code Combat
+            TeamCode
           </span>
           <span className="text-sm text-gray-400">Learn and Grow Together</span>
         </div>
