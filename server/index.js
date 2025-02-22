@@ -33,12 +33,14 @@ const teamRoutes = require('./routes/teamRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const codeStatmentRoutes=require('./routes/codeStatementsRoutes')
+const healthRoutes = require('./routes/healthRoutes')
 
 app.use('/api/contest', contestRoutes);
 app.use('/api/contest', teamRoutes); 
 app.use('/api/codestatment',codeStatmentRoutes)
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/health',healthRoutes)
 
 // Start server
 server.listen(process.env.PORT, () => {
