@@ -1,7 +1,13 @@
 const express = require("express")
 const router = express.Router()
 
-router.get('/',(req,res) => {
-    return res.status(200).json({status:"ok"})
-})
+app.head('/', (req, res) => {
+    console.log("HEAD request received at:", new Date().toISOString());
+    res.status(200).end();
+});
+
+app.get('/', (req, res) => {
+    console.log("GET request received at:", new Date().toISOString());
+    res.status(200).send('OK');
+});
 module.exports = router
