@@ -33,6 +33,18 @@ const HelpPopup = () => {
               </button>
             </div>
             <div className="mt-4 text-center">
+              <p>
+                Powered by{' '}
+                <a 
+                  href="https://www.glbajajgroup.org/" 
+                  class="text-yellow-400 hover:text-yellow-500 transition-colors" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  GL Bajaj
+                </a>
+              </p>
+
               <p>If you need assistance, please contact us:</p>
               <ul className="mt-4">
                 <li>
