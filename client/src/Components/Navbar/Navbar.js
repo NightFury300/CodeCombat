@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../Contexts/UserContext";
 import { BugPlay } from "lucide-react";
-import glb_logo from "../../assets/glb_logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -29,10 +28,11 @@ const Navbar = () => {
           className="flex items-center space-x-3 group hover:text-gray-300 transition-transform duration-300"
         >
           <BugPlay size={42} className="text-violet-300" />
+          
           {/* Text Container */}
           <div className="flex flex-col leading-tight">
             <span className="text-2xl font-bold text-white group-hover:text-violet-300 transition-colors duration-200">
-              CodeCombat
+              TeamCode
             </span>
             <span className="text-sm text-gray-400">Learn and Grow Together</span>
           </div>
@@ -95,10 +95,6 @@ const Navbar = () => {
               </Link>
             </>
           )}
-        </div>
-        <div>
-                    <img src={glb_logo} alt="Logo" className="w-10 h-10 rounded-full" />
-
         </div>
       </div>
     </div>
